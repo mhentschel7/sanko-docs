@@ -107,6 +107,8 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
 .doc-field .lbl{font-size:7pt;font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#888;display:block;margin-bottom:1px;}
 .doc-field .val{font-size:10pt;border-bottom:1px solid #ccc;padding-bottom:2px;min-height:16px;line-height:1.4;}
 .doc-sh{font-size:8pt;font-family:Arial,sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;margin:14px 0 4px;border-bottom:1px solid #1a1a1a;padding-bottom:2px;}
+.doc-grp-sh{font-size:6.5pt;font-family:Arial,sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:.15em;color:#7A7570;margin:0 0 6px;padding:3px 6px;background:#f2efe9;border-left:2px solid #8B6914;}
+.doc-grp{margin-bottom:4px;}
 .doc-body{font-size:var(--doc-body-size);line-height:1.6;margin-bottom:8px;}
 .doc-hl{background:#F7F2E8;border-left:3px solid #8B6914;padding:10px 14px;margin:12px 0;}
 .doc-hl .tlbl{font-size:7pt;font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em;color:#666;}
@@ -869,102 +871,137 @@ function renderSA(){
   ${notes?`<div class="doc-sh" data-e="sa-notes-head" contenteditable="true">Special Notes</div>${renderNotes(notes)}`:""}
   <hr class="doc-rule">
   <div class="doc-sh" data-e="sa-tc-head" contenteditable="true">Terms &amp; Conditions</div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c1t" contenteditable="true">Scope of Work</div>
-    <div data-e="sa-c1b" contenteditable="true"><ul style="margin:4px 0 4px 18px;padding:0;font-size:var(--doc-body-size);">
-      <li>CARPENTER agrees to provide custom carpentry services ("Services") as outlined in the approved proposal, estimate, drawings, or specifications associated with this Agreement ("Project"). Services may include, but are not limited to, material procurement, fabrication, labor, equipment use, installation preparation, installation, and general cleanup.</li>
-      <li>Any work not expressly included in the written scope shall be considered outside the scope and subject to a Change Order.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-termt" contenteditable="true">Term</div>
-    <div data-e="sa-c-termb" contenteditable="true"><ul style="margin:4px 0 4px 18px;padding:0;font-size:var(--doc-body-size);">
-      <li>This Agreement shall commence upon execution by both parties and shall terminate upon completion of CARPENTER's Services and receipt of all payments due.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-pay-t" contenteditable="true">Payment</div>
-    <p data-e="sa-pay-b" contenteditable="true">Upon completion of the project, CLIENT will pay CARPENTER a total of <strong>$${h(total)}</strong> for Carpentry Services. A Spot Deposit Invoice in the amount of <strong>$${h(spot)}</strong> was previously paid by CLIENT.</p></div>
-  <table class="ptbl">
-    <tr><th>Invoice</th><th>Amount</th><th>Trigger</th><th>Terms</th></tr>
-    <tr><td><strong>Deposit Invoice</strong><br><small style="font-size:7.5pt;">${p2}% of final, less Spot Deposit</small></td><td>$${h(d2)}</td><td data-e="sa-trig1" contenteditable="true">Upon Service Agreement signature</td><td>Net 2</td></tr>
-    <tr><td><strong>Fabrication / Install Invoice</strong><br><small style="font-size:7.5pt;">${p3}% of final</small></td><td>$${h(d3)}</td><td data-e="sa-trig2" contenteditable="true">Fabrication completion or start of install</td><td>Net 2</td></tr>
-    <tr><td><strong>Project Completion Invoice</strong><br><small style="font-size:7.5pt;">${p4}% of final</small></td><td>$${h(d4)}</td><td data-e="sa-trig3" contenteditable="true">Project completion</td><td>Net 2</td></tr>
-    <tr><td colspan="2"><strong>TOTAL</strong></td><td colspan="2"><strong>$${h(total)}</strong></td></tr>
-  </table>
-  <div data-e="sa-pay-notes" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-    <li>The deposit amount must be received no later than two (2) business days after both parties sign this agreement in order to hold CLIENT's project in CARPENTER's project queue.</li>
-    <li>Payments can be paid via cash, check, bank transfer or credit card. Credit card payments incur a 3.4% processing fee. Further payment instructions to follow in invoicing.</li>
-    <li>If deposit is not received within the above stated time frame, CLIENT is at risk of forfeiting their position within CARPENTER's project queue.</li>
-  </ul></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c2t" contenteditable="true">Daily Delay Fee Clause</div>
-    <div data-e="sa-c2b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>CLIENT is responsible for all general contracting operations related to the agreed upon project unless otherwise noted in this agreement. This includes, but is not limited to:
-        <ul style="margin:2px 0 2px 18px;padding:0;">
-          <li>Plumbing — relocation/capping of inlet/outlet water lines, sinks, traps, etc.</li>
-          <li>Electrical — relocation/termination of receptacles/switches/AV connections/etc.</li>
-          <li>HVAC — relocation/termination of vents/registers/etc.</li>
+
+  <!-- ── GROUP 1: Project Scope & Term ── -->
+  <div class="doc-grp">
+    <div class="doc-grp-sh" data-e="sa-grp1-head" contenteditable="true">Project Scope &amp; Term</div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c1t" contenteditable="true">Scope of Work</div>
+      <div data-e="sa-c1b" contenteditable="true"><ul style="margin:4px 0 4px 18px;padding:0;font-size:var(--doc-body-size);">
+        <li>CARPENTER agrees to provide custom carpentry services ("Services") as outlined in the approved proposal, estimate, drawings, or specifications associated with this Agreement ("Project"). Services may include, but are not limited to, material procurement, fabrication, labor, equipment use, installation preparation, installation, and general cleanup.</li>
+        <li>Any work not expressly included in the written scope shall be considered outside the scope and subject to a Change Order.</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-termt" contenteditable="true">Term</div>
+      <div data-e="sa-c-termb" contenteditable="true"><ul style="margin:4px 0 4px 18px;padding:0;font-size:var(--doc-body-size);">
+        <li>This Agreement shall commence upon execution by both parties and shall terminate upon completion of CARPENTER's Services and receipt of all payments due.</li>
+      </ul></div></div>
+  </div>
+
+  <hr class="doc-rule-thin">
+
+  <!-- ── GROUP 2: Financial Terms ── -->
+  <div class="doc-grp">
+    <div class="doc-grp-sh" data-e="sa-grp2-head" contenteditable="true">Financial Terms</div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-pay-t" contenteditable="true">Payment</div>
+      <p data-e="sa-pay-b" contenteditable="true">Upon completion of the project, CLIENT will pay CARPENTER a total of <strong>$${h(total)}</strong> for Carpentry Services. A Spot Deposit Invoice in the amount of <strong>$${h(spot)}</strong> was previously paid by CLIENT.</p></div>
+    <table class="ptbl">
+      <tr><th>Invoice</th><th>Amount</th><th>Trigger</th><th>Terms</th></tr>
+      <tr><td><strong>Deposit Invoice</strong><br><small style="font-size:7.5pt;">${p2}% of final, less Spot Deposit</small></td><td>$${h(d2)}</td><td data-e="sa-trig1" contenteditable="true">Upon Service Agreement signature</td><td>Net 2</td></tr>
+      <tr><td><strong>Fabrication / Install Invoice</strong><br><small style="font-size:7.5pt;">${p3}% of final</small></td><td>$${h(d3)}</td><td data-e="sa-trig2" contenteditable="true">Fabrication completion or start of install</td><td>Net 2</td></tr>
+      <tr><td><strong>Project Completion Invoice</strong><br><small style="font-size:7.5pt;">${p4}% of final</small></td><td>$${h(d4)}</td><td data-e="sa-trig3" contenteditable="true">Project completion</td><td>Net 2</td></tr>
+      <tr><td colspan="2"><strong>TOTAL</strong></td><td colspan="2"><strong>$${h(total)}</strong></td></tr>
+    </table>
+    <div data-e="sa-pay-notes" contenteditable="true" style="font-size:var(--doc-body-size);margin-bottom:10px;"><ul style="margin:4px 0 4px 18px;padding:0;">
+      <li>The deposit amount must be received no later than two (2) business days after both parties sign this agreement in order to hold CLIENT's project in CARPENTER's project queue.</li>
+      <li>Payments can be paid via cash, check, bank transfer or credit card. Credit card payments incur a 3.4% processing fee. Further payment instructions to follow in invoicing.</li>
+      <li>If deposit is not received within the above stated time frame, CLIENT is at risk of forfeiting their position within CARPENTER's project queue.</li>
+    </ul></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c2t" contenteditable="true">Daily Delay Fee Clause</div>
+      <div data-e="sa-c2b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>CLIENT is responsible for all general contracting operations related to the agreed upon project unless otherwise noted in this agreement. This includes, but is not limited to:
+          <ul style="margin:2px 0 2px 18px;padding:0;">
+            <li>Plumbing — relocation/capping of inlet/outlet water lines, sinks, traps, etc.</li>
+            <li>Electrical — relocation/termination of receptacles/switches/AV connections/etc.</li>
+            <li>HVAC — relocation/termination of vents/registers/etc.</li>
+          </ul>
+        </li>
+        <li>During installation, if it is discovered that outside trade services (including but not limited to those listed above) are required to move forward and thus delay the services rendered by CARPENTER, CLIENT will be subject to a Daily Delay Fee of $100/day for the first (3) days. Any additional time after the initial (3) day period will be subject to a daily rate of $25/day until necessary work has been completed so as to allow CARPENTER to continue and complete intended services. Fees allocated from Daily Delay Penalties will be added to final payment.</li>
+        <li>CARPENTER is willing to provide direction to help avoid potential delays but will not be held responsible in the event delays arise.</li>
+        <li>CARPENTER will not be responsible for appliance installation of any kind unless noted otherwise in this agreement.</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c3t" contenteditable="true">Change Orders Clause</div>
+      <div data-e="sa-c3b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>A $500.00 Change Order Charge will be assessed to CLIENT for any CLIENT requested deviation from the agreed upon design. Any additional labor or materials related to the Change Order will also be allocated to the total Change Order Charge.</li>
+        <li>Before any Change Order work can begin, Change Order requests must first be given CLIENT approval in writing via CARPENTER supplied Change Order Form or via email correspondence. No Change Order work shall begin without CLIENT confirmation.</li>
+        <li>All costs associated with CLIENT requested Change Order are due upon Change Order Invoice delivery.</li>
+        <li>Change Order work will not begin until the full amount of the Change Order Invoice has been remitted by CLIENT.</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c4t" contenteditable="true">Late Payment Finance Charge Clause</div>
+      <div data-e="sa-c4b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>CLIENT agrees to pay invoices on a Net 2 payment term (within 48 hours {weekends and holidays included} from date and time of delivery).</li>
+        <li>If either of the above listed invoices are not paid within the Net 2 payment terms from the date and time of the invoice delivery, CLIENT will be subject to a $100.00 finance charge per incident in addition to $25.00 per day until invoice payment is made.</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c5t" contenteditable="true">Material Escalation Clause</div>
+      <div data-e="sa-c5b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>If, during the performance of this contract, the price of material(s) significantly increases, through no fault of CARPENTER, the price of the material(s) shall be equitably adjusted by an amount reasonably necessary to cover any such significant price increases and reflected in final invoicing. As used herein, a significant price increase shall mean any increase in price exceeding 10% experienced by CARPENTER from the date of the contract signing. Such price increases shall be documented through quotes, invoices, or receipts. Where the delivery of an item is delayed, through no fault of CARPENTER, as a result of the shortage or unavailability, CARPENTER shall not be liable for any additional costs or damages associated with such delay(s).</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c11t" contenteditable="true">Liability for Breach of Agreement Clause</div>
+      <div data-e="sa-c11b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>CLIENT agrees to pay all reasonable collection costs, including attorney fees and court costs, incurred by CARPENTER in enforcing this Agreement.</li>
+        <li>This Agreement shall be governed by and construed in accordance with the laws of the State of Colorado. Venue shall lie in the county where CARPENTER's principal place of business is located.</li>
+      </ul></div></div>
+  </div>
+
+  <hr class="doc-rule-thin">
+
+  <!-- ── GROUP 3: Client Responsibilities ── -->
+  <div class="doc-grp">
+    <div class="doc-grp-sh" data-e="sa-grp3-head" contenteditable="true">Client Responsibilities</div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c7t" contenteditable="true">General Client Responsibilities and Information Clause</div>
+      <div data-e="sa-c7b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>It should be understood by CLIENT that processes conducted by CARPENTER can produce small amounts of dust. Although CARPENTER will provide general clean up services upon project completion, some small amounts of dust may remain.</li>
+        <li>It is suggested that any items (electronics, furniture, decor, etc.) CLIENT wishes to keep out of harm's way during CARPENTER install processes are removed or covered. CARPENTER will not be held accountable for items which should have been cleared before CARPENTER arrival. Where possible, CARPENTER will inform CLIENT of the need to remove objects; however, the responsibility rests with CLIENT to protect CLIENT property. In cases where damages have arisen as a direct result of CARPENTER negligence, CARPENTER will work with CLIENT to resolve the issue.</li>
+        <li>In the event that furniture, electronics, work out equipment, etc. is present in the installation area and is actively blocking the progress of CARPENTER installation of CLIENT project(s), CARPENTER will bill CLIENT at a rate of $95.00 an hour for the relocation of aforementioned items. The additional billed sum is to be added to final invoicing.</li>
+        <li>CLIENT is responsible for removing any wall mounted items before "Carpentry Services" are rendered and CLIENT is responsible for re-installing such items after "Carpentry Services" have been rendered. CARPENTER will not remove or reinstall any existing items (towel racks, toilet paper holders, mirror, decor, painting, tv mounts, AV mounts, etc.) unless explicitly indicated in the "Carpentry Services" above.</li>
+        <li>CARPENTER intends to carry out work with reasonable care, skill and expertise; however, CARPENTER work may result in superficial damage to flooring and drywall. CARPENTER stocks necessary filling compounds to properly resolve floor and drywall damage and will execute the repairs when necessary. It is suggested that CLIENT has touch up paint in the same color and sheen as the wall color where work is to be performed in the event CARPENTER intends to utilize paint for touch up purposes related to repaired damage from CARPENTER processes.</li>
+      </ul></div></div>
+  </div>
+
+  <hr class="doc-rule-thin">
+
+  <!-- ── GROUP 4: Quality Standards ── -->
+  <div class="doc-grp">
+    <div class="doc-grp-sh" data-e="sa-grp4-head" contenteditable="true">Quality Standards</div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c6t" contenteditable="true">Cabinetry Quality Standards (AWI Custom Grade Guidelines) Clause</div>
+      <div data-e="sa-c6b" contenteditable="true" style="font-size:var(--doc-body-size);">
+        <p style="margin:4px 0;">All work performed under this agreement will be fabricated and installed in accordance with the Architectural Woodwork Institute (AWI) CUSTOM GRADE Quality Standards. For the purpose of evaluating workmanship and finish quality, the following industry-accepted criteria shall apply:</p>
+        <ul style="margin:4px 0 4px 18px;padding:0;">
+          <li><strong>Inspection Distance</strong> — Surfaces will be evaluated from a normal viewing distance of 36 inches (3 feet), standing, under typical room lighting conditions. Evaluation will not be made under magnification, by running fingers over surfaces, or from extreme close range.</li>
+          <li><strong>Lighting Conditions</strong> — Inspection will take place under normal ambient lighting as would reasonably be expected in a finished residential or commercial environment. Direct sunlight, spotlighting, or other intense or unusual lighting shall not be used as the basis for determining compliance.</li>
+          <li><strong>Acceptable Variations</strong> — Minor variations in color, grain, texture, and sheen are natural characteristics of wood and wood products, and are not considered defects. Normal machining, sanding, and finishing tolerances, as defined by AWI CUSTOM GRADE Quality Standards, shall apply.</li>
+          <li><strong>Installation Standards</strong> — Installed casework, doors, and trim shall be plumb, level, and secure, within the tolerances outlined in AWI CUSTOM GRADE Quality Standards. Slight gaps, seams, or surface irregularities that fall within these tolerances are acceptable.</li>
         </ul>
-      </li>
-      <li>During installation, if it is discovered that outside trade services (including but not limited to those listed above) are required to move forward and thus delay the services rendered by CARPENTER, CLIENT will be subject to a Daily Delay Fee of $100/day for the first (3) days. Any additional time after the initial (3) day period will be subject to a daily rate of $25/day until necessary work has been completed so as to allow CARPENTER to continue and complete intended services. Fees allocated from Daily Delay Penalties will be added to final payment.</li>
-      <li>CARPENTER is willing to provide direction to help avoid potential delays but will not be held responsible in the event delays arise.</li>
-      <li>CARPENTER will not be responsible for appliance installation of any kind unless noted otherwise in this agreement.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c3t" contenteditable="true">Change Orders Clause</div>
-    <div data-e="sa-c3b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>A $500.00 Change Order Charge will be assessed to CLIENT for any CLIENT requested deviation from the agreed upon design. Any additional labor or materials related to the Change Order will also be allocated to the total Change Order Charge.</li>
-      <li>Before any Change Order work can begin, Change Order requests must first be given CLIENT approval in writing via CARPENTER supplied Change Order Form or via email correspondence. No Change Order work shall begin without CLIENT confirmation.</li>
-      <li>All costs associated with CLIENT requested Change Order are due upon Change Order Invoice delivery.</li>
-      <li>Change Order work will not begin until the full amount of the Change Order Invoice has been remitted by CLIENT.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c4t" contenteditable="true">Late Payment Finance Charge Clause</div>
-    <div data-e="sa-c4b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>CLIENT agrees to pay invoices on a Net 2 payment term (within 48 hours {weekends and holidays included} from date and time of delivery).</li>
-      <li>If either of the above listed invoices are not paid within the Net 2 payment terms from the date and time of the invoice delivery, CLIENT will be subject to a $100.00 finance charge per incident in addition to $25.00 per day until invoice payment is made.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c11t" contenteditable="true">Liability for Breach of Agreement Clause</div>
-    <div data-e="sa-c11b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>CLIENT agrees to pay all reasonable collection costs, including attorney fees and court costs, incurred by CARPENTER in enforcing this Agreement.</li>
-      <li>This Agreement shall be governed by and construed in accordance with the laws of the State of Colorado. Venue shall lie in the county where CARPENTER's principal place of business is located.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c7t" contenteditable="true">General Client Responsibilities and Information Clause</div>
-    <div data-e="sa-c7b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>It should be understood by CLIENT that processes conducted by CARPENTER can produce small amounts of dust. Although CARPENTER will provide general clean up services upon project completion, some small amounts of dust may remain.</li>
-      <li>It is suggested that any items (electronics, furniture, decor, etc.) CLIENT wishes to keep out of harm's way during CARPENTER install processes are removed or covered. CARPENTER will not be held accountable for items which should have been cleared before CARPENTER arrival. Where possible, CARPENTER will inform CLIENT of the need to remove objects; however, the responsibility rests with CLIENT to protect CLIENT property. In cases where damages have arisen as a direct result of CARPENTER negligence, CARPENTER will work with CLIENT to resolve the issue.</li>
-      <li>In the event that furniture, electronics, work out equipment, etc. is present in the installation area and is actively blocking the progress of CARPENTER installation of CLIENT project(s), CARPENTER will bill CLIENT at a rate of $95.00 an hour for the relocation of aforementioned items. The additional billed sum is to be added to final invoicing.</li>
-      <li>CLIENT is responsible for removing any wall mounted items before "Carpentry Services" are rendered and CLIENT is responsible for re-installing such items after "Carpentry Services" have been rendered. CARPENTER will not remove or reinstall any existing items (towel racks, toilet paper holders, mirror, decor, painting, tv mounts, AV mounts, etc.) unless explicitly indicated in the "Carpentry Services" above.</li>
-      <li>CARPENTER intends to carry out work with reasonable care, skill and expertise; however, CARPENTER work may result in superficial damage to flooring and drywall. CARPENTER stocks necessary filling compounds to properly resolve floor and drywall damage and will execute the repairs when necessary. It is suggested that CLIENT has touch up paint in the same color and sheen as the wall color where work is to be performed in the event CARPENTER intends to utilize paint for touch up purposes related to repaired damage from CARPENTER processes.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c5t" contenteditable="true">Material Escalation Clause</div>
-    <div data-e="sa-c5b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>If, during the performance of this contract, the price of material(s) significantly increases, through no fault of CARPENTER, the price of the material(s) shall be equitably adjusted by an amount reasonably necessary to cover any such significant price increases and reflected in final invoicing. As used herein, a significant price increase shall mean any increase in price exceeding 10% experienced by CARPENTER from the date of the contract signing. Such price increases shall be documented through quotes, invoices, or receipts. Where the delivery of an item is delayed, through no fault of CARPENTER, as a result of the shortage or unavailability, CARPENTER shall not be liable for any additional costs or damages associated with such delay(s).</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c6t" contenteditable="true">Cabinetry Quality Standards (AWI Custom Grade Guidelines) Clause</div>
-    <div data-e="sa-c6b" contenteditable="true" style="font-size:var(--doc-body-size);">
-      <p style="margin:4px 0;">All work performed under this agreement will be fabricated and installed in accordance with the Architectural Woodwork Institute (AWI) CUSTOM GRADE Quality Standards. For the purpose of evaluating workmanship and finish quality, the following industry-accepted criteria shall apply:</p>
-      <ul style="margin:4px 0 4px 18px;padding:0;">
-        <li><strong>Inspection Distance</strong> — Surfaces will be evaluated from a normal viewing distance of 36 inches (3 feet), standing, under typical room lighting conditions. Evaluation will not be made under magnification, by running fingers over surfaces, or from extreme close range.</li>
-        <li><strong>Lighting Conditions</strong> — Inspection will take place under normal ambient lighting as would reasonably be expected in a finished residential or commercial environment. Direct sunlight, spotlighting, or other intense or unusual lighting shall not be used as the basis for determining compliance.</li>
-        <li><strong>Acceptable Variations</strong> — Minor variations in color, grain, texture, and sheen are natural characteristics of wood and wood products, and are not considered defects. Normal machining, sanding, and finishing tolerances, as defined by AWI CUSTOM GRADE Quality Standards, shall apply.</li>
-        <li><strong>Installation Standards</strong> — Installed casework, doors, and trim shall be plumb, level, and secure, within the tolerances outlined in AWI CUSTOM GRADE Quality Standards. Slight gaps, seams, or surface irregularities that fall within these tolerances are acceptable.</li>
-      </ul>
-    </div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-wdt" contenteditable="true">Workmanship Disclaimer and Additional Work Clause</div>
-    <div data-e="sa-c-wdb" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>The Client acknowledges that all workmanship and finish quality will be evaluated in accordance with the AWI CUSTOM GRADE Quality Standards as outlined above. Any requests for corrections, alterations, or modifications that exceed AWI CUSTOM GRADE standards will be considered additional work and shall be subject to a separate written agreement and additional charges.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-lct" contenteditable="true">Language Confusion Clause</div>
-    <div data-e="sa-c-lcb" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>It is understood by the CARPENTER that some industry language may be confusing to those who are not actively involved in the trades. In the event CLIENT has confusion regarding the language above, CARPENTER agrees to explain in full detail any aspect of the information listed above before signature in order to provide CLIENT with a clear understanding of what the project entails. However, in the event an aspect of the project does not coincide with what CLIENT had in mind for the final product, CARPENTER will not be liable for the lack of due diligence displayed by CLIENT by failing to bring such questions to attention before agreement signature.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c8t" contenteditable="true">Mechanic's Lien Rights</div>
-    <div data-e="sa-c8b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>CARPENTER reserves all rights to file a mechanic's lien or other security interest as permitted by law. No rights are waived by this Agreement.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c9t" contenteditable="true">Force Majeure</div>
-    <div data-e="sa-c9b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>CARPENTER shall not be liable for delays caused by events beyond reasonable control, including supply chain disruptions, labor shortages, illness, weather, or governmental action. Timelines shall adjust accordingly.</li>
-    </ul></div></div>
-  <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c10t" contenteditable="true">Design Confirmation</div>
-    <div data-e="sa-c10b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
-      <li>Approved shop drawings supersede architectural plans. Any discrepancies not identified prior to approval become the responsibility of the approving party.</li>
-    </ul></div></div>
-  <div class="doc-body" data-e="sa-consent" contenteditable="true" style="margin-top:14px;font-size:9pt;">I have read, understand, and fully agree to the terms of this Agreement. I have signed this agreement freely and voluntarily, under no duress or threat. My signature is proof of my intention to execute under the aforementioned items. I am 18 years of age or older and mentally competent to enter into this Agreement.</div>
+      </div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-wdt" contenteditable="true">Workmanship Disclaimer and Additional Work Clause</div>
+      <div data-e="sa-c-wdb" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>The Client acknowledges that all workmanship and finish quality will be evaluated in accordance with the AWI CUSTOM GRADE Quality Standards as outlined above. Any requests for corrections, alterations, or modifications that exceed AWI CUSTOM GRADE standards will be considered additional work and shall be subject to a separate written agreement and additional charges.</li>
+      </ul></div></div>
+  </div>
+
+  <hr class="doc-rule-thin">
+
+  <!-- ── GROUP 5: General Provisions ── -->
+  <div class="doc-grp">
+    <div class="doc-grp-sh" data-e="sa-grp5-head" contenteditable="true">General Provisions</div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-lct" contenteditable="true">Language Confusion Clause</div>
+      <div data-e="sa-c-lcb" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>It is understood by the CARPENTER that some industry language may be confusing to those who are not actively involved in the trades. In the event CLIENT has confusion regarding the language above, CARPENTER agrees to explain in full detail any aspect of the information listed above before signature in order to provide CLIENT with a clear understanding of what the project entails. However, in the event an aspect of the project does not coincide with what CLIENT had in mind for the final product, CARPENTER will not be liable for the lack of due diligence displayed by CLIENT by failing to bring such questions to attention before agreement signature.</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c8t" contenteditable="true">Mechanic's Lien Rights</div>
+      <div data-e="sa-c8b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>CARPENTER reserves all rights to file a mechanic's lien or other security interest as permitted by law. No rights are waived by this Agreement.</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c9t" contenteditable="true">Force Majeure</div>
+      <div data-e="sa-c9b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>CARPENTER shall not be liable for delays caused by events beyond reasonable control, including supply chain disruptions, labor shortages, illness, weather, or governmental action. Timelines shall adjust accordingly.</li>
+      </ul></div></div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c10t" contenteditable="true">Design Confirmation</div>
+      <div data-e="sa-c10b" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>Approved shop drawings supersede architectural plans. Any discrepancies not identified prior to approval become the responsibility of the approving party.</li>
+      </ul></div></div>
+  </div>
+
+  <hr class="doc-rule-thin" style="margin-top:16px;">
+  <div class="doc-body" data-e="sa-consent" contenteditable="true" style="margin-top:10px;font-size:9pt;">I have read, understand, and fully agree to the terms of this Agreement. I have signed this agreement freely and voluntarily, under no duress or threat. My signature is proof of my intention to execute under the aforementioned items. I am 18 years of age or older and mentally competent to enter into this Agreement.</div>
   <div class="doc-cl" style="margin-top:8px;"><div class="doc-cl-t" data-e="sa-c12t" contenteditable="true">Amendments</div>
     <p data-e="sa-c12b" contenteditable="true">Any amendment or modification of this Agreement or additional obligation assumed by either party in connection with this Agreement will only be binding if evidenced in writing signed by both parties or documented via email correspondence.</p></div>
   <div class="doc-body" data-e="sa-sig-intro" contenteditable="true" style="margin-top:10px;font-size:9pt;">The parties hereby indicate by their signatures below that they have read and agree with this Agreement in its entirety. Printed names and signatures from both parties are required for this agreement to be enforceable and binding.</div>
