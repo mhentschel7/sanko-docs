@@ -50,19 +50,6 @@ body{font-family:Georgia,'Times New Roman',serif;background:#E8E3DA;color:var(--
 .carry-btn:hover{background:#ddd;}
 .print-btn{width:100%;padding:9px;background:var(--black);color:var(--cream);border:none;border-radius:3px;cursor:pointer;font-size:.79rem;font-family:Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-top:5px;transition:background .15s;}
 .print-btn:hover{background:var(--charcoal);}
-.email-btn{width:100%;padding:9px;background:#1d4b8f;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:.79rem;font-family:Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;transition:background .15s;}
-.email-btn:hover{background:#163a72;}
-#email-modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;}
-.email-modal-box{background:#fff;border-radius:7px;padding:28px 30px;max-width:470px;width:92%;box-shadow:0 10px 40px rgba(0,0,0,.28);font-family:Arial,sans-serif;}
-.email-modal-title{font-size:.95rem;font-weight:700;color:#1a1a1a;margin-bottom:16px;}
-.email-modal-to{font-size:.8rem;color:#444;margin-bottom:5px;}
-.email-modal-subj{font-size:.8rem;color:#444;margin-bottom:12px;}
-.email-modal-body-preview{background:#f5f5f5;border-radius:4px;padding:10px 12px;font-size:.74rem;color:#555;line-height:1.6;margin-bottom:12px;}
-.email-modal-tip{font-size:.73rem;color:#888;background:#fffbeb;border:1px solid #e8d84a;border-radius:4px;padding:8px 10px;margin-bottom:18px;line-height:1.5;}
-.email-modal-btns{display:flex;gap:9px;}
-.email-modal-save{flex:1;padding:9px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-family:Arial,sans-serif;}
-.email-modal-open{flex:1;padding:9px;background:#1d4b8f;color:#fff;border-radius:4px;cursor:pointer;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-family:Arial,sans-serif;text-decoration:none;display:block;text-align:center;border:none;}
-.email-modal-close{padding:9px 14px;background:#eee;color:#555;border:none;border-radius:4px;cursor:pointer;font-size:.76rem;font-family:Arial,sans-serif;}
 .proj-card{border:1px solid #ddd;border-radius:5px;padding:14px 14px 10px;margin-bottom:12px;background:#fafafa;}
 .proj-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .proj-card-num{font-family:Arial,sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--charcoal);}
@@ -186,7 +173,6 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
     <hr class="form-divider">
     <p style="font-size:.68rem;font-family:Arial,sans-serif;color:var(--mid);margin-bottom:10px;">📝 Click any text in the preview to edit it directly.</p>
     <button class="print-btn" onclick="printDoc()">⬇ Save as PDF</button>
-    <button class="email-btn" onclick="emailClient(\'q\')">📧 Email to Client</button>
   </div>
   <div class="preview-panel">
     <div class="edit-hint">📝 Click any paragraph, bullet, or section in the document below to edit it directly</div>
@@ -229,7 +215,6 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
     </details>
     <button class="carry-btn" onclick="carryEtoS()">→ Carry Forward to Spot Deposit</button>
     <button class="print-btn" onclick="printDoc()">⬇ Save as PDF</button>
-    <button class="email-btn" onclick="emailClient(\'e\')">📧 Email to Client</button>
   </div>
   <div class="preview-panel">
     <div class="edit-hint">📝 Click any paragraph, bullet, or section in the document below to edit it directly</div>
@@ -281,7 +266,6 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
     <hr class="form-divider">
     <button class="carry-btn" onclick="carryStoSA()">→ Carry Forward to Service Agreement</button>
     <button class="print-btn" onclick="printDoc()">⬇ Save as PDF</button>
-    <button class="email-btn" onclick="emailClient(\'s\')">📧 Email to Client</button>
   </div>
   <div class="preview-panel">
     <div class="edit-hint">📝 Click any paragraph, bullet, or section in the document below to edit it directly</div>
@@ -340,7 +324,6 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
     <input type="file" id="moz-file" accept=".pdf" style="display:none" onchange="loadMoz(this)">
     <hr class="form-divider">
     <button class="print-btn" onclick="printDoc()">⬇ Save as PDF</button>
-    <button class="email-btn" onclick="emailClient(\'sa\')">📧 Email to Client</button>
   </div>
   <div class="preview-panel">
     <div class="edit-hint">📝 Click any paragraph, bullet, or section in the document below to edit it directly</div>
@@ -435,7 +418,6 @@ function finBox(){
 
 // ── Print ──
 // -- Email Client --
-function emailClient(tab){
   const emailMap={q:"q-email",e:"e-email",s:"s-email",sa:"sa-email"};
   const nameMap={q:"q-name",e:"e-name",s:"s-name",sa:"sa-name"};
   const docLabels={q:"Estimate Questionnaire",e:"Estimate",s:"Spot Deposit Agreement",sa:"Service Agreement"};
