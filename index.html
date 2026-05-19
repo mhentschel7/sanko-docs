@@ -745,23 +745,7 @@ function carryEtoS(){
   // Carry total: use bundled if entered, otherwise a la carte grand total
   const bn=toNum(v("e-bundle"));const gn=eGrandTotal();
   set("s-total",(!isNaN(bn)&&bn>0)?fmt$(bn):isNaN(gn)?"":fmt$(gn));
-  // Carry all projects — combine if multiple
-  const ps=estimateProjects.length?estimateProjects:[DEFAULT_PROJ()];
-  if(ps.length===1){
-    set("s-sow",ps[0].sow);
-    ["int","ext","hw","hing","ds","drw","top","fin","notes"].forEach(f=>set("s-"+f,ps[0][f]||""));
-  } else {
-    // Multi-project: label each SOW block with the project name
-    set("s-sow",ps.map((p,i)=>{
-      const lbl=p.name||"Project "+(i+1);
-      return p.sow?"["+lbl+"]\n"+p.sow:"["+lbl+"]";
-    }).join("\n\n"));
-    // Specs: collect unique non-empty values per field across all projects
-    ["int","ext","hw","hing","ds","drw","top","fin","notes"].forEach(f=>{
-      const vals=[...new Set(ps.map(p=>(p[f]||"").trim()).filter(Boolean))];
-      set("s-"+f,vals.join(" / "));
-    });
-  }
+  // Project scope/specs come from estimateProjects directly in renderS()
   calcS();renderS();switchTab("s",document.querySelectorAll(".tab-btn")[2]);}
 
 // ═══════ SPOT DEPOSIT CALCS ═══════
@@ -776,12 +760,22 @@ function renderS(){
         date=fmtDate(v("s-date")),start=v("s-start")||"TBD",build=v("s-build")||"TBD",
         install=v("s-install")||"TBD",total=fmtVal("s-total"),
         d1=fmtVal("s-dep1"),d2=fmtVal("s-dep2"),d3=fmtVal("s-dep3"),d4=fmtVal("s-dep4"),
-        p1=num("s-pct1",25),p2=num("s-pct2",60),p3=num("s-pct3",30),p4=num("s-pct4",10),
-        sow=v("s-sow"),notes=v("s-notes");
-  const specs=specList([["Cabinet Interiors",v("s-int")],["Cabinet Exteriors",v("s-ext")],
-    ["Hardware",v("s-hw")],["Hinges",v("s-hing")],["Drawer Slides",v("s-ds")],
-    ["Drawers",v("s-drw")],["Top Material",v("s-top")],["Finish / Paint",v("s-fin")]]);
+        p1=num("s-pct1",25),p2=num("s-pct2",60),p3=num("s-pct3",30),p4=num("s-pct4",10);
   const addr=addrHtml(st,ci);
+  const multi=estimateProjects.length>1;
+  // Build per-project scope sections — each project appears individually
+  const projSections=estimateProjects.map((proj,i)=>{
+    const specs=specList([["Cabinet Interiors",proj.int],["Cabinet Exteriors",proj.ext],
+      ["Hardware",proj.hw],["Hinges",proj.hing],["Drawer Slides",proj.ds],
+      ["Drawers",proj.drw],["Top Material",proj.top],["Finish / Paint",proj.fin]]);
+    const sow=proj.sow,notes=proj.notes;
+    return`${multi?`<div style="margin-top:${i>0?"20px":"0"};border-bottom:2px solid #1a1a1a;padding-bottom:5px;margin-bottom:6px;font-family:Georgia,'Times New Roman',serif;font-size:11pt;font-weight:bold;letter-spacing:.03em;color:#1a1a1a;">${h(proj.name||"Project "+(i+1))}</div>`:""}
+${sow?`<div class="doc-body"><strong>SOW:</strong> ${h(sow)}</div>`:""}
+${specs}
+${notes?`<div class="doc-sh" style="font-size:8.5pt;margin-top:8px;">Special Notes</div>${renderNotes(notes)}`:""}
+${i<estimateProjects.length-1?`<hr class="doc-rule-thin" style="margin:14px 0 0;">`:""}`;
+  }).join("");
+  const hasContent=estimateProjects.some(p=>p.sow||p.int||p.ext);
   document.getElementById(pid).innerHTML=docHdr()+`
   <div class="doc-title">Spot Deposit Agreement</div>
   <div class="doc-sub" data-e="s-subtitle" contenteditable="true">This agreement to hold Owner's project in Carpenter's queue is made between the Owner and Carpenter effective from the date of signature.</div>
@@ -799,10 +793,7 @@ function renderS(){
   <hr class="doc-rule">
   <div class="doc-sh" data-e="s-tc-head" contenteditable="true">Terms &amp; Conditions</div>
   <div class="doc-hl"><div class="tlbl">Estimated Project Total</div><div class="tval">~$${h(total)}</div></div>
-  ${sow?`<div class="doc-sh" data-e="s-sow-head" contenteditable="true">Scope of Work</div><div class="doc-body"><strong>SOW:</strong> ${h(sow)}</div>`:""}
-  ${specs}
-  ${notes?`<div class="doc-sh" data-e="s-notes-head" contenteditable="true">Special Notes</div>${renderNotes(notes)}`:""}
-  ${(sow||specs)?`<div class="doc-body" data-e="s-incl" contenteditable="true" style="font-size:8.5pt;font-style:italic;">*** All figures are inclusive of design, materials, fasteners, labor, delivery, site prep, installation, and cleanup.</div>`:""}
+  ${hasContent?`<div class="doc-sh" data-e="s-sow-head" contenteditable="true">Scope of Work</div>${projSections}<div class="doc-body" data-e="s-incl" contenteditable="true" style="font-size:8.5pt;font-style:italic;">*** All figures are inclusive of design, materials, fasteners, labor, delivery, site prep, installation, and cleanup.</div>`:""}
   <div class="doc-sh" data-e="s-pay-head" contenteditable="true">Payment Schedule</div>
   <table class="ptbl">
     <tr><th>Invoice</th><th>Amount</th><th>Trigger</th><th>Terms</th></tr>
