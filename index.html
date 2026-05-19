@@ -251,19 +251,8 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
     <div class="pct-row"><label>Project Completion</label><input type="number" id="s-pct4" value="10" min="0" max="100" step="0.1" oninput="calcS();renderS()"><span>%</span></div>
     <div class="form-group"><label>Completion ($)</label><input id="s-dep4" oninput="renderS()" placeholder="Auto-calculated"></div>
     <hr class="form-divider">
-    <h2>Scope of Work</h2>
-    <div class="form-group"><label>Scope Summary</label><textarea id="s-sow" class="tall" oninput="renderS()"></textarea></div>
-    <hr class="form-divider">
-    <h2>Spec Lines <span class="spec-hint">(clear to hide)</span></h2>
-    <div class="form-group"><label>Cabinet Interiors</label><input id="s-int" oninput="renderS()"></div>
-    <div class="form-group"><label>Cabinet Exteriors</label><input id="s-ext" oninput="renderS()"></div>
-    <div class="form-group"><label>Hardware</label><input id="s-hw" oninput="renderS()"></div>
-    <div class="form-group"><label>Hinges</label><input id="s-hing" oninput="renderS()"></div>
-    <div class="form-group"><label>Drawer Slides</label><input id="s-ds" oninput="renderS()"></div>
-    <div class="form-group"><label>Drawers</label><input id="s-drw" oninput="renderS()"></div>
-    <div class="form-group"><label>Top Material</label><input id="s-top" oninput="renderS()"></div>
-    <div class="form-group"><label>Finish / Paint</label><input id="s-fin" oninput="renderS()"></div>
-    <div class="form-group"><label>Special Notes <span class="spec-hint">(clear to hide)</span></label><textarea id="s-notes" class="tall" oninput="renderS()"></textarea></div>
+    <h2>Projects</h2>
+    <div id="s-projects-container"></div>
     <hr class="form-divider">
     <button class="carry-btn" onclick="carryStoSA()">→ Carry Forward to Service Agreement</button>
     <button class="print-btn" onclick="printDoc()">⬇ Save as PDF</button>
@@ -301,19 +290,8 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
     <div class="pct-row"><label>Project Completion</label><input type="number" id="sa-pct4" value="10" min="0" max="100" step="0.1" oninput="calcSA();renderSA()"><span>%</span></div>
     <div class="form-group"><label>Completion ($)</label><input id="sa-dep4" oninput="renderSA()" placeholder="Auto-calculated"></div>
     <hr class="form-divider">
-    <h2>Scope of Work</h2>
-    <div class="form-group"><label>Scope Summary</label><textarea id="sa-sow" class="tall" oninput="renderSA()"></textarea></div>
-    <hr class="form-divider">
-    <h2>Spec Lines <span class="spec-hint">(clear to hide)</span></h2>
-    <div class="form-group"><label>Cabinet Interiors</label><input id="sa-int" oninput="renderSA()"></div>
-    <div class="form-group"><label>Cabinet Exteriors</label><input id="sa-ext" oninput="renderSA()"></div>
-    <div class="form-group"><label>Hardware</label><input id="sa-hw" oninput="renderSA()"></div>
-    <div class="form-group"><label>Hinges</label><input id="sa-hing" oninput="renderSA()"></div>
-    <div class="form-group"><label>Drawer Slides</label><input id="sa-ds" oninput="renderSA()"></div>
-    <div class="form-group"><label>Drawers</label><input id="sa-drw" oninput="renderSA()"></div>
-    <div class="form-group"><label>Top Material</label><input id="sa-top" oninput="renderSA()"></div>
-    <div class="form-group"><label>Finish / Paint</label><input id="sa-fin" oninput="renderSA()"></div>
-    <div class="form-group"><label>Special Notes <span class="spec-hint">(clear to hide)</span></label><textarea id="sa-notes" class="tall" oninput="renderSA()"></textarea></div>
+    <h2>Projects</h2>
+    <div id="sa-projects-container"></div>
     <hr class="form-divider">
     <h2>Mozaik Multiprint</h2>
     <p style="font-size:.7rem;font-family:Arial,sans-serif;color:#666;margin-bottom:7px;">Upload Mozaik PDF — renders into the Project Images section.</p>
@@ -394,6 +372,8 @@ function DEFAULT_PROJ(){return{name:"",total:"",avail:"",sow:"Design, fabricatio
   notes:"- Access to existing outlets provided by ETR's (electric trim rings)\n- Variances in the horizontal and vertical planes of existing walls can create gaps in the cabinet-to-wall seam. The use of filler strips may be implemented to hide any gaps in cabinet-to-wall seam.\n- Face nailing of material may be necessary / Color matched putty to be used for filling holes"
 };}
 let estimateProjects=[DEFAULT_PROJ()];
+let spotProjects=[DEFAULT_PROJ()];
+let saProjects=[DEFAULT_PROJ()];
 function escAttr(s){return h(s).replace(/"/g,"&quot;");}
 function eGrandTotal(){let sum=0,any=false;estimateProjects.forEach(p=>{const n=toNum(p.total);if(!isNaN(n)){sum+=n;any=true;}});return any?sum:NaN;}
 let FONT={projName:12,bodyText:10,nsHead:10,nsBody:11};
@@ -509,6 +489,58 @@ function addProject(){
 }
 function removeProject(i){if(estimateProjects.length<=1)return;estimateProjects.splice(i,1);renderProjectForms();renderE();}
 
+function renderSpotForms(){
+  const c=document.getElementById("s-projects-container");if(!c)return;
+  const multi=spotProjects.length>1;
+  c.innerHTML=spotProjects.map((p,i)=>`
+<div class="proj-card" id="s-proj-card-${i}">
+  <div class="proj-card-hdr">
+    <span class="proj-card-num">${multi?"Project "+(i+1):"Project Details"}</span>
+  </div>
+  <div class="form-group"><label>Project Name / Room</label><input type="text" value="${escAttr(p.name)}" oninput="spotProjects[${i}].name=this.value;renderS()" placeholder="e.g. Master Bathroom Vanity"></div>
+  <div class="form-group"><label>Scope of Work Summary</label><textarea class="tall" oninput="spotProjects[${i}].sow=this.value;renderS()" placeholder="Describe what's being built...">${escAttr(p.sow)}</textarea></div>
+  <details class="proj-specs-details"${i===0?" open":""}>
+    <summary>Spec Lines <span class="spec-hint">(expand to edit)</span></summary>
+    <div style="margin-top:8px;">
+    <div class="form-group"><label>Cabinet Interiors</label><input type="text" value="${escAttr(p.int)}" oninput="spotProjects[${i}].int=this.value;renderS()"></div>
+    <div class="form-group"><label>Cabinet Exteriors</label><input type="text" value="${escAttr(p.ext)}" oninput="spotProjects[${i}].ext=this.value;renderS()"></div>
+    <div class="form-group"><label>Hardware</label><input type="text" value="${escAttr(p.hw)}" oninput="spotProjects[${i}].hw=this.value;renderS()"></div>
+    <div class="form-group"><label>Hinges</label><input type="text" value="${escAttr(p.hing)}" oninput="spotProjects[${i}].hing=this.value;renderS()"></div>
+    <div class="form-group"><label>Drawer Slides</label><input type="text" value="${escAttr(p.ds)}" oninput="spotProjects[${i}].ds=this.value;renderS()"></div>
+    <div class="form-group"><label>Drawers</label><input type="text" value="${escAttr(p.drw)}" oninput="spotProjects[${i}].drw=this.value;renderS()"></div>
+    <div class="form-group"><label>Top Material</label><input type="text" value="${escAttr(p.top)}" oninput="spotProjects[${i}].top=this.value;renderS()"></div>
+    <div class="form-group"><label>Finish / Paint</label><input type="text" value="${escAttr(p.fin)}" oninput="spotProjects[${i}].fin=this.value;renderS()"></div>
+    <div class="form-group"><label>Special Notes <span class="spec-hint">(clear to hide)</span></label><textarea class="tall" oninput="spotProjects[${i}].notes=this.value;renderS()">${escAttr(p.notes)}</textarea></div>
+    </div>
+  </details>
+</div>`).join("");}
+
+function renderSAForms(){
+  const c=document.getElementById("sa-projects-container");if(!c)return;
+  const multi=saProjects.length>1;
+  c.innerHTML=saProjects.map((p,i)=>`
+<div class="proj-card" id="sa-proj-card-${i}">
+  <div class="proj-card-hdr">
+    <span class="proj-card-num">${multi?"Project "+(i+1):"Project Details"}</span>
+  </div>
+  <div class="form-group"><label>Project Name / Room</label><input type="text" value="${escAttr(p.name)}" oninput="saProjects[${i}].name=this.value;renderSA()" placeholder="e.g. Master Bathroom Vanity"></div>
+  <div class="form-group"><label>Scope of Work Summary</label><textarea class="tall" oninput="saProjects[${i}].sow=this.value;renderSA()" placeholder="Describe what's being built...">${escAttr(p.sow)}</textarea></div>
+  <details class="proj-specs-details"${i===0?" open":""}>
+    <summary>Spec Lines <span class="spec-hint">(expand to edit)</span></summary>
+    <div style="margin-top:8px;">
+    <div class="form-group"><label>Cabinet Interiors</label><input type="text" value="${escAttr(p.int)}" oninput="saProjects[${i}].int=this.value;renderSA()"></div>
+    <div class="form-group"><label>Cabinet Exteriors</label><input type="text" value="${escAttr(p.ext)}" oninput="saProjects[${i}].ext=this.value;renderSA()"></div>
+    <div class="form-group"><label>Hardware</label><input type="text" value="${escAttr(p.hw)}" oninput="saProjects[${i}].hw=this.value;renderSA()"></div>
+    <div class="form-group"><label>Hinges</label><input type="text" value="${escAttr(p.hing)}" oninput="saProjects[${i}].hing=this.value;renderSA()"></div>
+    <div class="form-group"><label>Drawer Slides</label><input type="text" value="${escAttr(p.ds)}" oninput="saProjects[${i}].ds=this.value;renderSA()"></div>
+    <div class="form-group"><label>Drawers</label><input type="text" value="${escAttr(p.drw)}" oninput="saProjects[${i}].drw=this.value;renderSA()"></div>
+    <div class="form-group"><label>Top Material</label><input type="text" value="${escAttr(p.top)}" oninput="saProjects[${i}].top=this.value;renderSA()"></div>
+    <div class="form-group"><label>Finish / Paint</label><input type="text" value="${escAttr(p.fin)}" oninput="saProjects[${i}].fin=this.value;renderSA()"></div>
+    <div class="form-group"><label>Special Notes <span class="spec-hint">(clear to hide)</span></label><textarea class="tall" oninput="saProjects[${i}].notes=this.value;renderSA()">${escAttr(p.notes)}</textarea></div>
+    </div>
+  </details>
+</div>`).join("");}
+
 function printDoc(){const t=document.title;document.title=" ";window.print();setTimeout(()=>{document.title=t;},1200);}
 
 // ═══════ PORTFOLIO PHOTOS ═══════
@@ -577,7 +609,7 @@ function saveClientData() {
   const nameMap = {"tab-q":"q-name","tab-e":"e-name","tab-s":"s-name","tab-sa":"sa-name","tab-ic":"ic-name"};
   const name = fields[nameMap[activeTab]] || fields["e-name"] || fields["q-name"] || "Client";
   const date = new Date().toISOString().split("T")[0];
-  const blob = new Blob([JSON.stringify({v:2, fields, estimateProjects}, null, 2)], {type:"application/json"});
+  const blob = new Blob([JSON.stringify({v:2, fields, estimateProjects, spotProjects, saProjects}, null, 2)], {type:"application/json"});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
   a.download = `${name} ${tabLabel} ${date}.json`; a.click();
 }
@@ -597,7 +629,9 @@ function loadClientData() {
             if (el) el.value = val;
           });
           if(Array.isArray(data.estimateProjects)&&data.estimateProjects.length>0){estimateProjects=data.estimateProjects;}else{estimateProjects=[DEFAULT_PROJ()];}
-          clearDirty(); renderProjectForms(); renderQ(); renderE(); renderS(); renderSA(); renderIC();
+          if(Array.isArray(data.spotProjects)&&data.spotProjects.length>0){spotProjects=data.spotProjects;}else{spotProjects=[DEFAULT_PROJ()];}
+          if(Array.isArray(data.saProjects)&&data.saProjects.length>0){saProjects=data.saProjects;}else{saProjects=[DEFAULT_PROJ()];}
+          clearDirty(); renderProjectForms(); renderSpotForms(); renderSAForms(); renderQ(); renderE(); renderS(); renderSA(); renderIC();
         } else { alert("Invalid file format."); }
       } catch(err) { alert("Could not load file. Please select a valid Sanko Docs JSON file."); }
     };
@@ -745,7 +779,9 @@ function carryEtoS(){
   // Carry total: use bundled if entered, otherwise a la carte grand total
   const bn=toNum(v("e-bundle"));const gn=eGrandTotal();
   set("s-total",(!isNaN(bn)&&bn>0)?fmt$(bn):isNaN(gn)?"":fmt$(gn));
-  // Project scope/specs come from estimateProjects directly in renderS()
+  // Deep-copy all projects into spotProjects
+  spotProjects=estimateProjects.map(p=>({...p}));
+  renderSpotForms();
   calcS();renderS();switchTab("s",document.querySelectorAll(".tab-btn")[2]);}
 
 // ═══════ SPOT DEPOSIT CALCS ═══════
@@ -762,9 +798,9 @@ function renderS(){
         d1=fmtVal("s-dep1"),d2=fmtVal("s-dep2"),d3=fmtVal("s-dep3"),d4=fmtVal("s-dep4"),
         p1=num("s-pct1",25),p2=num("s-pct2",60),p3=num("s-pct3",30),p4=num("s-pct4",10);
   const addr=addrHtml(st,ci);
-  const multi=estimateProjects.length>1;
-  // Build per-project scope sections — each project appears individually
-  const projSections=estimateProjects.map((proj,i)=>{
+  const multi=spotProjects.length>1;
+  // Build per-project scope sections from spotProjects (editable copy)
+  const projSections=spotProjects.map((proj,i)=>{
     const specs=specList([["Cabinet Interiors",proj.int],["Cabinet Exteriors",proj.ext],
       ["Hardware",proj.hw],["Hinges",proj.hing],["Drawer Slides",proj.ds],
       ["Drawers",proj.drw],["Top Material",proj.top],["Finish / Paint",proj.fin]]);
@@ -775,7 +811,7 @@ ${specs}
 ${notes?`<div class="doc-sh" style="font-size:8.5pt;margin-top:8px;">Special Notes</div>${renderNotes(notes)}`:""}
 ${i<estimateProjects.length-1?`<hr class="doc-rule-thin" style="margin:14px 0 0;">`:""}`;
   }).join("");
-  const hasContent=estimateProjects.some(p=>p.sow||p.int||p.ext);
+  const hasContent=spotProjects.some(p=>p.sow||p.int||p.ext);
   document.getElementById(pid).innerHTML=docHdr()+`
   <div class="doc-title">Spot Deposit Agreement</div>
   <div class="doc-sub" data-e="s-subtitle" contenteditable="true">This agreement to hold Owner's project in Carpenter's queue is made between the Owner and Carpenter effective from the date of signature.</div>
@@ -821,9 +857,12 @@ ${i<estimateProjects.length-1?`<hr class="doc-rule-thin" style="margin:14px 0 0;
   restoreEdits(pid);}
 
 function carryStoSA(){
-  ["name","street","city","email","start","build","install","sow","int","ext","hw","hing","ds","drw","top","fin","notes"].forEach(f=>set("sa-"+f,v("s-"+f)));
+  ["name","street","city","email","start","build","install"].forEach(f=>set("sa-"+f,v("s-"+f)));
   set("sa-total",v("s-total"));set("sa-spot",v("s-dep1"));
   set("sa-pct2",v("s-pct2"));set("sa-pct3",v("s-pct3"));set("sa-pct4",v("s-pct4"));
+  // Deep-copy all projects into saProjects
+  saProjects=spotProjects.map(p=>({...p}));
+  renderSAForms();
   calcSA();renderSA();switchTab("sa",document.querySelectorAll(".tab-btn")[3]);}
 
 // ═══════ SERVICE AGREEMENT CALCS ═══════
@@ -840,16 +879,27 @@ function renderSA(){
         date=fmtDate(v("sa-date")),start=v("sa-start")||"TBD",build=v("sa-build")||"TBD",
         install=v("sa-install")||"TBD",total=fmtVal("sa-total"),spot=fmtVal("sa-spot"),
         p2=num("sa-pct2",60),p3=num("sa-pct3",30),p4=num("sa-pct4",10),
-        sow=v("sa-sow"),notes=v("sa-notes");
+        ;
   const tNum=toNum(v("sa-total")),spNum=toNum(v("sa-spot"));
   const d2=(!isNaN(tNum)&&!isNaN(spNum))?fmt$(tNum*p2/100-spNum):(v("sa-dep2")||"TBD");
   const d3=!isNaN(tNum)?fmt$(tNum*p3/100):(v("sa-dep3")||"TBD");
   const d4=!isNaN(tNum)?fmt$(tNum*p4/100):(v("sa-dep4")||"TBD");
   if(!isNaN(tNum)){if(!isNaN(spNum))set("sa-dep2",d2);set("sa-dep3",d3);set("sa-dep4",d4);}
-  const specs=specList([["Cabinet Interiors",v("sa-int")],["Cabinet Exteriors",v("sa-ext")],
-    ["Hardware",v("sa-hw")],["Hinges",v("sa-hing")],["Drawer Slides",v("sa-ds")],
-    ["Drawers",v("sa-drw")],["Top Material",v("sa-top")],["Finish / Paint",v("sa-fin")]]);
   const addr=addrHtml(st,ci);
+  const multi_sa=saProjects.length>1;
+  const saProjSections=saProjects.map((proj,i)=>{
+    const specs=specList([["Cabinet Interiors",proj.int],["Cabinet Exteriors",proj.ext],
+      ["Hardware",proj.hw],["Hinges",proj.hing],["Drawer Slides",proj.ds],
+      ["Drawers",proj.drw],["Top Material",proj.top],["Finish / Paint",proj.fin]]);
+    const sow=proj.sow,notes=proj.notes;
+    return\`\${multi_sa?\`<div style="margin-top:\${i>0?"20px":"0"};border-bottom:2px solid #1a1a1a;padding-bottom:5px;margin-bottom:6px;font-family:Georgia,'Times New Roman',serif;font-size:11pt;font-weight:bold;letter-spacing:.03em;color:#1a1a1a;">\${h(proj.name||"Project "+(i+1))}</div>\`:""}
+\${sow?\`<div class="doc-body"><strong>SOW:</strong> \${h(sow)}</div>\`:""}
+\${specs}
+\${notes?\`<div class="doc-sh" style="font-size:8.5pt;margin-top:8px;">Special Notes</div>\${renderNotes(notes)}\`:""}
+\${i<saProjects.length-1?\`<hr class="doc-rule-thin" style="margin:14px 0 0;">\`:""}
+\`;
+  }).join("");
+  const hasSAContent=saProjects.some(p=>p.sow||p.int||p.ext);
   const mozSection=mozHtml||`<div style="font-size:9pt;color:#bbb;text-align:center;padding:16px;border:1px dashed #ddd;">Upload Mozaik Multiprint PDF to display design renderings here.</div>`;
   document.getElementById(pid).innerHTML=docHdr()+`
   <div class="doc-title">Service Agreement</div>
@@ -869,9 +919,7 @@ function renderSA(){
   <div style="font-size:8pt;color:#555;margin-bottom:8px;font-style:italic;" data-e="sa-img-note" contenteditable="true">*** Please review design carefully. Client-requested amendments after approval will result in Change Order fees.</div>
   ${mozSection}
   <hr class="doc-rule">
-  ${sow?`<div class="doc-sh" data-e="sa-sow-head" contenteditable="true">Scope of Work</div><div class="doc-body"><strong>SOW:</strong> ${h(sow)}</div>`:""}
-  ${specs}
-  ${notes?`<div class="doc-sh" data-e="sa-notes-head" contenteditable="true">Special Notes</div>${renderNotes(notes)}`:""}
+  ${hasSAContent?`<div class="doc-sh" data-e="sa-sow-head" contenteditable="true">Scope of Work</div>${saProjSections}`:""}
   <hr class="doc-rule">
   <div class="doc-sh" data-e="sa-tc-head" contenteditable="true">Terms &amp; Conditions</div>
 
@@ -1291,7 +1339,7 @@ da.addEventListener("drop",e=>{e.preventDefault();da.classList.remove("dragover"
 const today=new Date().toISOString().split("T")[0];
 ["q-date","e-date","s-date","sa-date","ic-date"].forEach(id=>set(id,today));
 renderProjectForms();
-renderQ();renderE();renderS();renderSA();renderIC();
+renderProjectForms();renderSpotForms();renderSAForms();renderQ();renderE();renderS();renderSA();renderIC();
 
 // ═══════ COMMA AUTO-FORMATTING FOR FINANCIAL INPUTS ═══════
 (function(){
