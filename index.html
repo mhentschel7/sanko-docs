@@ -295,13 +295,14 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
     <hr class="form-divider">
     <h2>Mozaik Multiprint</h2>
     <p style="font-size:.7rem;font-family:Arial,sans-serif;color:#666;margin-bottom:7px;">Upload Mozaik PDF — renders into the Project Images section.</p>
-    <div class="upload-area" id="moz-drop" onclick="document.getElementById('moz-file').click()">
+    <label for="moz-file" class="upload-area" id="moz-drop" style="cursor:pointer;display:block;">
       <div class="icon">📐</div>
       <div>Click or drag Mozaik PDF here</div>
       <div style="font-size:.65rem;margin-top:2px;opacity:.7" id="moz-status">No file loaded</div>
-    </div>
+    </label>
     <input type="file" id="moz-file" accept=".pdf" style="display:none" onchange="loadMoz(this)">
     <hr class="form-divider">
+    <button class="carry-btn" onclick="carryToIC()">→ Carry Forward to Install Checklist</button>
     <button class="print-btn" onclick="printDoc()">⬇ Save as PDF</button>
   </div>
   <div class="preview-panel">
@@ -878,8 +879,7 @@ function renderSA(){
   const name=v("sa-name")||"[Client Name]",st=v("sa-street"),ci=v("sa-city"),
         date=fmtDate(v("sa-date")),start=v("sa-start")||"TBD",build=v("sa-build")||"TBD",
         install=v("sa-install")||"TBD",total=fmtVal("sa-total"),spot=fmtVal("sa-spot"),
-        p2=num("sa-pct2",60),p3=num("sa-pct3",30),p4=num("sa-pct4",10),
-        ;
+        p2=num("sa-pct2",60),p3=num("sa-pct3",30),p4=num("sa-pct4",10);
   const tNum=toNum(v("sa-total")),spNum=toNum(v("sa-spot"));
   const d2=(!isNaN(tNum)&&!isNaN(spNum))?fmt$(tNum*p2/100-spNum):(v("sa-dep2")||"TBD");
   const d3=!isNaN(tNum)?fmt$(tNum*p3/100):(v("sa-dep3")||"TBD");
@@ -892,12 +892,12 @@ function renderSA(){
       ["Hardware",proj.hw],["Hinges",proj.hing],["Drawer Slides",proj.ds],
       ["Drawers",proj.drw],["Top Material",proj.top],["Finish / Paint",proj.fin]]);
     const sow=proj.sow,notes=proj.notes;
-    return\`\${multi_sa?\`<div style="margin-top:\${i>0?"20px":"0"};border-bottom:2px solid #1a1a1a;padding-bottom:5px;margin-bottom:6px;font-family:Georgia,'Times New Roman',serif;font-size:11pt;font-weight:bold;letter-spacing:.03em;color:#1a1a1a;">\${h(proj.name||"Project "+(i+1))}</div>\`:""}
-\${sow?\`<div class="doc-body"><strong>SOW:</strong> \${h(sow)}</div>\`:""}
-\${specs}
-\${notes?\`<div class="doc-sh" style="font-size:8.5pt;margin-top:8px;">Special Notes</div>\${renderNotes(notes)}\`:""}
-\${i<saProjects.length-1?\`<hr class="doc-rule-thin" style="margin:14px 0 0;">\`:""}
-\`;
+    return`${multi_sa?`<div style="margin-top:${i>0?"20px":"0"};border-bottom:2px solid #1a1a1a;padding-bottom:5px;margin-bottom:6px;font-family:Georgia,'Times New Roman',serif;font-size:11pt;font-weight:bold;letter-spacing:.03em;color:#1a1a1a;">${h(proj.name||"Project "+(i+1))}</div>`:""}
+${sow?`<div class="doc-body"><strong>SOW:</strong> ${h(sow)}</div>`:""}
+${specs}
+${notes?`<div class="doc-sh" style="font-size:8.5pt;margin-top:8px;">Special Notes</div>${renderNotes(notes)}`:""}
+${i<saProjects.length-1?`<hr class="doc-rule-thin" style="margin:14px 0 0;">`:""}
+`;
   }).join("");
   const hasSAContent=saProjects.some(p=>p.sow||p.int||p.ext);
   const mozSection=mozHtml||`<div style="font-size:9pt;color:#bbb;text-align:center;padding:16px;border:1px dashed #ddd;">Upload Mozaik Multiprint PDF to display design renderings here.</div>`;
@@ -1082,7 +1082,7 @@ function renderSA(){
 function renderIC(){
   const pid="prev-ic";if(isEditing(pid))return;saveEdits(pid);
   const name=v("ic-name")||"[Client Name]",street=v("ic-street"),city=v("ic-city"),
-        date=v("ic-date"),pm=v("ic-pm"),co=v("ic-co"),lead=v("ic-lead"),
+        date=fmtDate(v("ic-date")),pm=v("ic-pm"),co=v("ic-co"),lead=v("ic-lead"),
         crew=v("ic-crew"),installDate=v("ic-install-date"),arrival=v("ic-arrival"),
         completion=v("ic-completion"),duration=v("ic-duration"),
         sow=v("ic-sow"),pmNotes=v("ic-pm-notes"),notes=v("ic-notes");
