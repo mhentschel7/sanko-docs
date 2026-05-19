@@ -745,10 +745,23 @@ function carryEtoS(){
   // Carry total: use bundled if entered, otherwise a la carte grand total
   const bn=toNum(v("e-bundle"));const gn=eGrandTotal();
   set("s-total",(!isNaN(bn)&&bn>0)?fmt$(bn):isNaN(gn)?"":fmt$(gn));
-  // Carry first project specs
-  const p0=estimateProjects[0]||DEFAULT_PROJ();
-  set("s-sow",p0.sow);
-  ["int","ext","hw","hing","ds","drw","top","fin","notes"].forEach(f=>set("s-"+f,p0[f]||""));
+  // Carry all projects — combine if multiple
+  const ps=estimateProjects.length?estimateProjects:[DEFAULT_PROJ()];
+  if(ps.length===1){
+    set("s-sow",ps[0].sow);
+    ["int","ext","hw","hing","ds","drw","top","fin","notes"].forEach(f=>set("s-"+f,ps[0][f]||""));
+  } else {
+    // Multi-project: label each SOW block with the project name
+    set("s-sow",ps.map((p,i)=>{
+      const lbl=p.name||"Project "+(i+1);
+      return p.sow?"["+lbl+"]\n"+p.sow:"["+lbl+"]";
+    }).join("\n\n"));
+    // Specs: collect unique non-empty values per field across all projects
+    ["int","ext","hw","hing","ds","drw","top","fin","notes"].forEach(f=>{
+      const vals=[...new Set(ps.map(p=>(p[f]||"").trim()).filter(Boolean))];
+      set("s-"+f,vals.join(" / "));
+    });
+  }
   calcS();renderS();switchTab("s",document.querySelectorAll(".tab-btn")[2]);}
 
 // ═══════ SPOT DEPOSIT CALCS ═══════
