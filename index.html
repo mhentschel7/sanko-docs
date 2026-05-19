@@ -150,6 +150,7 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
   <button class="tab-btn" onclick="switchTab('e',this)">💰 Estimate</button>
   <button class="tab-btn" onclick="switchTab('s',this)">📄 Spot Deposit</button>
   <button class="tab-btn" onclick="switchTab('sa',this)">📃 Service Agreement</button>
+  <button class="tab-btn" onclick="switchTab('ic',this)">🔧 Install Checklist</button>
 </div>
 
 <!-- ══ QUESTIONNAIRE ══ -->
@@ -328,6 +329,51 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
   <div class="preview-panel">
     <div class="edit-hint">📝 Click any paragraph, bullet, or section in the document below to edit it directly</div>
     <div class="doc-page" id="prev-sa"></div>
+  </div>
+</div>
+
+
+<div id="tab-ic" class="tab-panel workspace">
+  <div class="form-col">
+    <h2>Install Checklist</h2>
+    <div class="form-group"><label>Client / Project Name</label><input id="ic-name" oninput="renderIC()"></div>
+    <div class="form-group"><label>Street Address</label><input id="ic-street" oninput="renderIC()"></div>
+    <div class="form-group"><label>City &amp; State</label><input id="ic-city" oninput="renderIC()"></div>
+    <div class="form-group"><label>Date</label><input id="ic-date" type="date" oninput="renderIC()"></div>
+    <hr class="form-divider">
+    <div class="form-group"><label>Project Manager</label><input id="ic-pm" oninput="renderIC()" placeholder="Name &amp; contact"></div>
+    <div class="form-group"><label>Installer Company</label><input id="ic-co" oninput="renderIC()"></div>
+    <div class="form-group"><label>Lead Installer</label><input id="ic-lead" oninput="renderIC()"></div>
+    <div class="form-group"><label>Crew Members</label><textarea id="ic-crew" class="tall" oninput="renderIC()" placeholder="Names or count"></textarea></div>
+    <hr class="form-divider">
+    <div class="form-group"><label>Install Date</label><input id="ic-install-date" oninput="renderIC()"></div>
+    <div class="form-group"><label>Arrival Time</label><input id="ic-arrival" oninput="renderIC()" placeholder="e.g. 7:30 AM"></div>
+    <div class="form-group"><label>Expected Completion</label><input id="ic-completion" oninput="renderIC()" placeholder="e.g. June 14, 2025"></div>
+    <div class="form-group"><label>Est. Install Duration</label><input id="ic-duration" oninput="renderIC()" placeholder="e.g. 2 Business Days"></div>
+    <hr class="form-divider">
+    <div class="form-group"><label>Scope of Work</label><textarea id="ic-sow" class="tall" oninput="renderIC()" placeholder="Carried from Service Agreement"></textarea></div>
+    <hr class="form-divider">
+    <details>
+      <summary style="font-size:.7rem;font-family:Arial,sans-serif;color:#666;cursor:pointer;margin-bottom:6px;">Spec Lines</summary>
+      <div class="form-group"><label>Cabinet Interiors</label><input id="ic-int" oninput="renderIC()"></div>
+      <div class="form-group"><label>Cabinet Exteriors</label><input id="ic-ext" oninput="renderIC()"></div>
+      <div class="form-group"><label>Hardware</label><input id="ic-hw" oninput="renderIC()"></div>
+      <div class="form-group"><label>Hinges</label><input id="ic-hing" oninput="renderIC()"></div>
+      <div class="form-group"><label>Drawer Slides</label><input id="ic-ds" oninput="renderIC()"></div>
+      <div class="form-group"><label>Drawers</label><input id="ic-drw" oninput="renderIC()"></div>
+      <div class="form-group"><label>Top Material</label><input id="ic-top" oninput="renderIC()"></div>
+      <div class="form-group"><label>Finish / Paint</label><input id="ic-fin" oninput="renderIC()"></div>
+      <div class="form-group"><label>Special Notes</label><textarea id="ic-notes" class="tall" oninput="renderIC()"></textarea></div>
+    </details>
+    <hr class="form-divider">
+    <div class="form-group"><label>Project Manager Notes</label><textarea id="ic-pm-notes" rows="5" style="min-height:90px;resize:vertical;" oninput="renderIC()" placeholder="Site-specific notes, special instructions, known issues..."></textarea></div>
+    <hr class="form-divider">
+    <button class="carry-btn" onclick="carryToIC()">← Carry Forward from Service Agreement</button>
+    <button class="print-btn" onclick="printDoc()">⬇ Save as PDF</button>
+  </div>
+  <div class="preview-panel">
+    <div class="edit-hint">📝 Click any text in the preview to edit it directly</div>
+    <div class="doc-page" id="prev-ic"></div>
   </div>
 </div>
 
@@ -526,9 +572,9 @@ function saveClientData() {
     fields[el.id] = el.value;
   });
   const activeTab = (document.querySelector(".tab-panel.active")||{}).id || "tab-q";
-  const tabLabels = {"tab-q":"Estimate Questionnaire","tab-e":"Estimate","tab-s":"Spot Deposit Agreement","tab-sa":"Service Agreement"};
+  const tabLabels = {"tab-q":"Estimate Questionnaire","tab-e":"Estimate","tab-s":"Spot Deposit Agreement","tab-sa":"Service Agreement","tab-ic":"Install Checklist"};
   const tabLabel = tabLabels[activeTab] || "Sanko Docs";
-  const nameMap = {"tab-q":"q-name","tab-e":"e-name","tab-s":"s-name","tab-sa":"sa-name"};
+  const nameMap = {"tab-q":"q-name","tab-e":"e-name","tab-s":"s-name","tab-sa":"sa-name","tab-ic":"ic-name"};
   const name = fields[nameMap[activeTab]] || fields["e-name"] || fields["q-name"] || "Client";
   const date = new Date().toISOString().split("T")[0];
   const blob = new Blob([JSON.stringify({v:2, fields, estimateProjects}, null, 2)], {type:"application/json"});
@@ -551,7 +597,7 @@ function loadClientData() {
             if (el) el.value = val;
           });
           if(Array.isArray(data.estimateProjects)&&data.estimateProjects.length>0){estimateProjects=data.estimateProjects;}else{estimateProjects=[DEFAULT_PROJ()];}
-          clearDirty(); renderProjectForms(); renderQ(); renderE(); renderS(); renderSA();
+          clearDirty(); renderProjectForms(); renderQ(); renderE(); renderS(); renderSA(); renderIC();
         } else { alert("Invalid file format."); }
       } catch(err) { alert("Could not load file. Please select a valid Sanko Docs JSON file."); }
     };
@@ -980,6 +1026,241 @@ function renderSA(){
   <div class="doc-wm">${CO} · ${WEB}</div>`;
   restoreEdits(pid);}
 
+// ═══════ INSTALL CHECKLIST ═══════
+function renderIC(){
+  const pid="prev-ic";if(isEditing(pid))return;saveEdits(pid);
+  const name=v("ic-name")||"[Client Name]",street=v("ic-street"),city=v("ic-city"),
+        date=v("ic-date"),pm=v("ic-pm"),co=v("ic-co"),lead=v("ic-lead"),
+        crew=v("ic-crew"),installDate=v("ic-install-date"),arrival=v("ic-arrival"),
+        completion=v("ic-completion"),duration=v("ic-duration"),
+        sow=v("ic-sow"),pmNotes=v("ic-pm-notes"),notes=v("ic-notes");
+  const specs=specList([["Cabinet Interiors",v("ic-int")],["Cabinet Exteriors",v("ic-ext")],
+    ["Hardware",v("ic-hw")],["Hinges",v("ic-hing")],["Drawer Slides",v("ic-ds")],
+    ["Drawers",v("ic-drw")],["Top Material",v("ic-top")],["Finish / Paint",v("ic-fin")]]);
+  const addr=addrHtml(street,city);
+  const mozSection=mozHtml||`<div style="font-size:9pt;color:#bbb;text-align:center;padding:16px;border:1px dashed #ddd;">Upload Mozaik Multiprint PDF in the Service Agreement tab to display design renderings here.</div>`;
+  const chk=t=>`<div style="display:flex;align-items:flex-start;gap:6px;margin:2px 0;font-size:var(--doc-body-size);"><span style="flex-shrink:0;">&#9744;</span><span>${h(t)}</span></div>`;
+  const chkH=t=>`<div style="font-size:8pt;font-weight:bold;font-family:Arial,sans-serif;margin:10px 0 3px;padding:2px 0;border-bottom:1px solid #eee;">${h(t)}</div>`;
+  document.getElementById(pid).innerHTML=docHdr()+`
+  <div class="doc-title">Installation Project Checklist</div>
+  <div class="doc-legal" data-e="ic-legal" contenteditable="true">This is a working field document — review all sections before arriving on site.</div>
+  <hr class="doc-rule">
+  <div class="doc-field-row">
+    <div class="doc-field"><span class="lbl">Client / Project</span><div class="val">${h(name)}</div></div>
+    ${addr?`<div class="doc-field"><span class="lbl">Address</span><div class="val" style="font-size:9pt;">${addr}</div></div>`:""}
+    <div class="doc-field"><span class="lbl">Date</span><div class="val">${h(date)}</div></div>
+  </div>
+  <table class="ptbl" style="margin:8px 0;">
+    <tr><th>Install Date</th><th>Arrival Time</th><th>Est. Completion</th><th>Duration</th></tr>
+    <tr><td>${h(installDate)||"—"}</td><td>${h(arrival)||"—"}</td><td>${h(completion)||"—"}</td><td>${h(duration)||"—"}</td></tr>
+  </table>
+  <table class="ptbl" style="margin:8px 0;">
+    <tr><th>Project Manager</th><th>Installer Company</th><th>Lead Installer</th><th>Crew</th></tr>
+    <tr><td>${h(pm)||"—"}</td><td>${h(co)||"—"}</td><td>${h(lead)||"—"}</td><td>${h(crew)||"—"}</td></tr>
+  </table>
+  <hr class="doc-rule">
+  ${sow?`<div class="doc-sh" data-e="ic-sow-head" contenteditable="true">Scope of Work</div><div class="doc-body"><strong>SOW:</strong> ${h(sow)}</div>`:""}
+  ${specs}
+  ${notes?`<div class="doc-sh" data-e="ic-notes-head" contenteditable="true">Special Notes</div>${renderNotes(notes)}`:""}
+  <div class="doc-sh" data-e="ic-img-head" contenteditable="true">Project Images</div>
+  <div style="font-size:8pt;color:#555;margin-bottom:8px;font-style:italic;" data-e="ic-img-note" contenteditable="true">Review design carefully — all field questions should reference these drawings.</div>
+  ${mozSection}
+  <hr class="doc-rule">
+  <div class="doc-sh" data-e="ic-resp-head" contenteditable="true">Responsibilities Overview</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0;">
+    <div>
+      <div class="doc-grp-sh" data-e="ic-sanko-head" contenteditable="true">Sanko Provides</div>
+      <div data-e="ic-sanko-list" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:3px 0 3px 16px;padding:0;">
+        <li>Assembled, painted/stained cabinetry</li>
+        <li>Cabinet hardware</li>
+        <li>Touch-up paint/stain</li>
+        <li>Project plans, elevations &amp; specs</li>
+        <li>Delivery of all components</li>
+        <li>Drawer slides &amp; receiving clips installed</li>
+        <li>Door &amp; drawer hardware (unless noted)</li>
+        <li>Clearly labeled parts</li>
+        <li>Change order &amp; revision communication</li>
+        <li>Material lists &amp; missing item follow-up</li>
+        <li>Business hours installation support</li>
+        <li>Warranty defect repair coordination</li>
+      </ul></div>
+    </div>
+    <div>
+      <div class="doc-grp-sh" data-e="ic-cont-head" contenteditable="true">Contractor Performs</div>
+      <div data-e="ic-cont-list" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:3px 0 3px 16px;padding:0;">
+        <li>Review plans prior to installation</li>
+        <li>Verify field dimensions &amp; site readiness</li>
+        <li>Install plumb, level, square &amp; secure</li>
+        <li>Scribe panels &amp; fillers to walls/ceilings</li>
+        <li>Caulk neatly with taped surfaces</li>
+        <li>Adjust doors, drawers &amp; hardware</li>
+        <li>Protect all finished surfaces</li>
+        <li>Maintain clean, organized jobsite</li>
+        <li>Complete punch work before walkthrough</li>
+        <li>Report damaged/missing materials immediately</li>
+        <li>No modifications without written approval</li>
+        <li>Document site conditions &amp; submit photos</li>
+        <li>Communicate delays immediately</li>
+      </ul></div>
+    </div>
+  </div>
+  <hr class="doc-rule">
+  <div class="doc-sh" data-e="ic-pre-head" contenteditable="true">1. Pre-Installation Confirmation (24–48 Hours Before)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div>
+      ${chkH("Scheduling &amp; Communication")}
+      ${chk("Confirm install date &amp; arrival time with PM")}
+      ${chk("Confirm site is ready for installation")}
+      ${chk("Verify access hours and jobsite rules")}
+      ${chk("Confirm superintendent contact info")}
+      ${chk("Confirm final drawings/revisions received")}
+      ${chk("Review punch items from prior visits")}
+      ${chk("Confirm required manpower for scope")}
+      ${chk("Confirm specialty tools/equipment needed")}
+    </div>
+    <div>
+      ${chkH("Materials &amp; Documentation")}
+      ${chk("Verify all cabinets/materials loaded")}
+      ${chk("Verify hardware and accessories loaded")}
+      ${chk("Verify fillers, panels, trim &amp; moldings loaded")}
+      ${chk("Verify sinks/appliances received (if applicable)")}
+      ${chk("Verify touch-up kit &amp; extra materials loaded")}
+      ${chk("Inspect materials for damage prior to departure")}
+      ${chk("Installer has latest plans/elevations")}
+      ${chk("Installer has scope of work &amp; change orders")}
+      ${chk("Installer reviewed completion photo requirements")}
+    </div>
+  </div>
+  <div class="doc-sh" data-e="ic-arrival-head" contenteditable="true">2. Jobsite Arrival</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div>
+      ${chkH("Site Conditions")}
+      ${chk("Check in with superintendent/site contact")}
+      ${chk("Verify correct unit/home/building")}
+      ${chk("Verify flooring complete in install areas")}
+      ${chk("Verify walls finished &amp; paint stage confirmed")}
+      ${chk("Verify HVAC operational (if required)")}
+      ${chk("Verify adequate lighting and power")}
+      ${chk("Report site issues before starting")}
+    </div>
+    <div>
+      ${chkH("Material Handling")}
+      ${chk("Inspect all delivered product before install")}
+      ${chk("Photograph any damaged materials immediately")}
+      ${chk("Stage materials safely and neatly")}
+      ${chk("Protect finished surfaces and flooring")}
+      ${chk("Dispose of packaging appropriately")}
+    </div>
+  </div>
+  <div class="doc-sh" data-e="ic-quality-head" contenteditable="true">3. Installation Quality</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div>
+      ${chkH("Cabinet Installation")}
+      ${chk("Installed per plans and elevations")}
+      ${chk("Level and plumb")}
+      ${chk("Cabinet faces flush and aligned")}
+      ${chk("Proper fastening into studs/blocking")}
+      ${chk("Proper spacing for appliances")}
+      ${chk("Fillers installed correctly")}
+      ${chk("Panels installed and secured")}
+      ${chk("Toe kicks installed securely")}
+      ${chk("Crown molding installed cleanly")}
+      ${chk("Scribes fit tightly to walls/ceilings")}
+      ${chk("Seams clean and consistent")}
+      ${chkH("Countertop Readiness")}
+      ${chk("Cabinets secured and ready for template")}
+      ${chk("Dishwasher panels/brackets installed")}
+      ${chk("Sink cabinet properly supported")}
+      ${chk("All required supports installed")}
+    </div>
+    <div>
+      ${chkH("Doors, Drawers &amp; Hardware")}
+      ${chk("All doors adjusted evenly")}
+      ${chk("Drawer gaps consistent")}
+      ${chk("Soft-close functioning properly")}
+      ${chk("Handles/knobs straight and consistent")}
+      ${chk("No scratches or damage to fronts")}
+      ${chk("Specialty hardware functioning")}
+      ${chkH("Accessories &amp; Specialty Items")}
+      ${chk("Roll-outs installed and operating")}
+      ${chk("Trash pullouts functioning")}
+      ${chk("Lazy Susan aligned and working")}
+      ${chk("Floating shelves level and secure")}
+      ${chk("Closet accessories installed correctly")}
+      ${chk("Garage/storage accessories installed")}
+    </div>
+  </div>
+  <div class="doc-sh" data-e="ic-punch-head" contenteditable="true">4. Punch, Damage &amp; Completion</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div>
+      ${chkH("Punch &amp; Damage")}
+      ${chk("Self punch completed before leaving")}
+      ${chk("All adjustments completed")}
+      ${chk("Missing items documented")}
+      ${chk("Warranty concerns documented &amp; photographed")}
+      ${chk("Cabinet damage documented")}
+      ${chk("Jobsite damage documented")}
+      ${chk("Damage photos submitted same day")}
+    </div>
+    <div>
+      ${chkH("Cleanup &amp; Final Verification")}
+      ${chk("All trash/debris removed")}
+      ${chk("Vacuum/sweep work area")}
+      ${chk("Stickers/protective films removed")}
+      ${chk("Jobsite left clean and professional")}
+      ${chk("Final walkthrough completed")}
+      ${chk("Superintendent signoff requested")}
+      ${chk("Completion photos uploaded to project folder")}
+      ${chk("Project manager notified of completion")}
+    </div>
+  </div>
+  <div class="doc-sh" data-e="ic-photos-head" contenteditable="true">5. Required Photos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div>
+      ${chkH("Wide Shots")}
+      ${chk("Full kitchen")}
+      ${chk("Full vanity areas")}
+      ${chk("Pantry/storage areas")}
+      ${chk("Closets (if applicable)")}
+      ${chk("Garage/storage systems")}
+    </div>
+    <div>
+      ${chkH("Detail Shots")}
+      ${chk("Crown details")}
+      ${chk("Appliance panels")}
+      ${chk("Floating shelves")}
+      ${chk("Specialty accessories")}
+      ${chk("Any completed repairs")}
+      ${chk("Any damage/issues")}
+    </div>
+  </div>
+  <hr class="doc-rule">
+  <div class="doc-sh" data-e="ic-pmnotes-head" contenteditable="true">Project Manager Notes</div>
+  <div data-e="ic-pm-notes-display" contenteditable="true" style="min-height:70px;border:1px solid #e0dbd0;padding:10px;border-radius:3px;font-size:var(--doc-body-size);margin-bottom:8px;">${pmNotes?h(pmNotes):"&nbsp;"}</div>
+  <hr class="doc-rule">
+  <div class="doc-sh" data-e="ic-signoff-head" contenteditable="true">Sign-Off</div>
+  <div class="doc-body" data-e="ic-signoff-note" contenteditable="true" style="font-size:8.5pt;">By initialing below, the lead installer and project manager confirm that all checklist items have been reviewed.</div>
+  <div class="doc-sig" style="margin-top:12px;">
+    <div style="display:flex;gap:32px;">
+      <div style="flex:1;">
+        <div class="doc-sig-row"><div class="doc-sig-line"></div><div class="doc-sig-lbl">Lead Installer — Print Name</div></div>
+        <div class="doc-sig-row"><div class="doc-sig-line"></div><div class="doc-sig-lbl">Initials &amp; Date</div></div>
+      </div>
+      <div style="flex:1;">
+        <div class="doc-sig-row"><div class="doc-sig-line"></div><div class="doc-sig-lbl">Project Manager — Print Name</div></div>
+        <div class="doc-sig-row"><div class="doc-sig-line"></div><div class="doc-sig-lbl">Initials &amp; Date</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="doc-wm">${CO} · ${WEB}</div>`;
+  restoreEdits(pid);}
+
+function carryToIC(){
+  ["name","street","city","sow","int","ext","hw","hing","ds","drw","top","fin","notes"].forEach(f=>set("ic-"+f,v("sa-"+f)));
+  set("ic-duration",v("sa-install"));
+  renderIC();switchTab("ic",document.querySelectorAll(".tab-btn")[4]);}
+
+
 // ═══════ MOZAIK ═══════
 pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 async function loadMoz(input){
@@ -1004,9 +1285,9 @@ da.addEventListener("drop",e=>{e.preventDefault();da.classList.remove("dragover"
 
 // ═══════ INIT ═══════
 const today=new Date().toISOString().split("T")[0];
-["q-date","e-date","s-date","sa-date"].forEach(id=>set(id,today));
+["q-date","e-date","s-date","sa-date","ic-date"].forEach(id=>set(id,today));
 renderProjectForms();
-renderQ();renderE();renderS();renderSA();
+renderQ();renderE();renderS();renderSA();renderIC();
 
 // ═══════ COMMA AUTO-FORMATTING FOR FINANCIAL INPUTS ═══════
 (function(){
@@ -1027,7 +1308,7 @@ renderQ();renderE();renderS();renderSA();
 })();
 
 // Delegated listeners: mark a data-e element dirty the moment the user edits it in the preview
-["prev-q","prev-e","prev-s","prev-sa"].forEach(pid=>{
+["prev-q","prev-e","prev-s","prev-sa","prev-ic"].forEach(pid=>{
   document.getElementById(pid).addEventListener("input",function(e){
     const key=e.target.dataset&&e.target.dataset.e;
     if(key){DIRTY.add(key);ES[key]=e.target.innerHTML;}
@@ -1040,7 +1321,7 @@ function enableSpellCheck(){
 }
 enableSpellCheck();
 const _scObserver=new MutationObserver(enableSpellCheck);
-["prev-q","prev-e","prev-s","prev-sa"].forEach(pid=>{
+["prev-q","prev-e","prev-s","prev-sa","prev-ic"].forEach(pid=>{
   _scObserver.observe(document.getElementById(pid),{childList:true,subtree:false});
 });
 </script>
