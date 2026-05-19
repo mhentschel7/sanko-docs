@@ -417,35 +417,6 @@ function finBox(){
   &nbsp;<a href="${FIN_URL}" class="fin-link" target="_blank">Apply here →</a></div>`;}
 
 // ── Print ──
-// -- Email Client --
-  const emailMap={q:"q-email",e:"e-email",s:"s-email",sa:"sa-email"};
-  const nameMap={q:"q-name",e:"e-name",s:"s-name",sa:"sa-name"};
-  const docLabels={q:"Estimate Questionnaire",e:"Estimate",s:"Spot Deposit Agreement",sa:"Service Agreement"};
-  const clientEmail=v(emailMap[tab])||"";const clientName=v(nameMap[tab])||"";const docLabel=docLabels[tab]||"Document";
-  if(!clientEmail){alert("Please enter a Client Email address in the form first.");return;}
-  const firstName=clientName.split(" ")[0]||clientName||"there";
-  const subjectText="Sanko Custom Carpentry \u2013 "+docLabel;
-  const bodyText="Hi "+firstName+",\n\nPlease find attached your "+docLabel+" from Sanko Custom Carpentry.\n\nFeel free to reach out with any questions!\n\nBest regards,\nSanko Custom Carpentry\n"+PHONE+"\n"+EMAIL+"\n"+WEB;
-  const mailtoHref="mailto:"+clientEmail+"?subject="+encodeURIComponent(subjectText)+"&body="+encodeURIComponent(bodyText);
-  const existing=document.getElementById("email-modal-overlay");if(existing)existing.remove();
-  const overlay=document.createElement("div");overlay.id="email-modal-overlay";
-  overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;";
-  overlay.innerHTML=`<div class="email-modal-box">
-    <div class="email-modal-title">\u{1F4E7} Send to Client</div>
-    <div class="email-modal-to"><strong>To:</strong> ${clientEmail}</div>
-    <div class="email-modal-subj"><strong>Subject:</strong> ${subjectText}</div>
-    <div class="email-modal-body-preview">Hi ${firstName},<br><br>Please find your ${docLabel} attached.<br><br>Best regards,<br>Sanko Custom Carpentry</div>
-    <div class="email-modal-tip">\u2460 Click <strong>Save PDF</strong> to download the document.<br>\u2461 Click <strong>Open Email</strong> \u2014 your email app opens pre-filled. Attach the PDF and send.</div>
-    <div class="email-modal-btns">
-      <button class="email-modal-save" onclick="printDoc()">\u2b07 Save PDF</button>
-      <a class="email-modal-open" href="${mailtoHref}">\u{1F4E7} Open Email</a>
-      <button class="email-modal-close" onclick="document.getElementById('email-modal-overlay').remove()">\u2715</button>
-    </div>
-  </div>`;
-  overlay.addEventListener("click",function(e){if(e.target===overlay)overlay.remove();});
-  document.body.appendChild(overlay);
-}
-
 // -- Multi-project form --
 function renderProjectForms(){
   const c=document.getElementById("e-projects-container");if(!c)return;
@@ -964,6 +935,17 @@ function renderSA(){
   <!-- ── GROUP 5: General Provisions ── -->
   <div class="doc-grp">
     <div class="doc-grp-sh" data-e="sa-grp5-head" contenteditable="true">General Provisions</div>
+    <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-subt" contenteditable="true">Subcontractor / Third-Party Installation Clause</div>
+      <div data-e="sa-c-subb" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
+        <li>CARPENTER reserves the right to utilize subcontractors, independent contractors, or third-party tradespeople for portions of the Services outlined in this Agreement, including but not limited to delivery, installation, fabrication assistance, finish work, or specialty trade services.</li>
+        <li>All subcontracted individuals or companies shall operate under the direction of CARPENTER for purposes of project coordination; however, such parties may be independent entities and not direct employees of CARPENTER.</li>
+        <li>CLIENT acknowledges and agrees that the use of subcontracted labor is a normal and accepted practice within the construction and millwork industries and does not constitute a deviation from this Agreement or the expected standard of workmanship.</li>
+        <li>CARPENTER shall make reasonable efforts to ensure subcontracted work meets the quality standards outlined in this Agreement; however, CARPENTER shall not be held liable for delays, damages, or deficiencies caused by third-party trades, vendors, installers, or subcontractors beyond CARPENTER'S reasonable control.</li>
+        <li>CLIENT agrees to provide subcontractors and third-party installers the same site access, working conditions, and protections afforded to CARPENTER under this Agreement.</li>
+        <li>CARPENTER must require subcontractors to maintain general liability insurance consistent with industry standards.</li>
+        <li>All warranty claims, punch list items, or workmanship concerns shall be communicated directly to CARPENTER and not to subcontractors.</li>
+        <li>Scheduling of subcontracted labor is subject to trade availability and coordination.</li>
+      </ul></div></div>
     <div class="doc-cl"><div class="doc-cl-t" data-e="sa-c-lct" contenteditable="true">Language Confusion Clause</div>
       <div data-e="sa-c-lcb" contenteditable="true" style="font-size:var(--doc-body-size);"><ul style="margin:4px 0 4px 18px;padding:0;">
         <li>It is understood by the CARPENTER that some industry language may be confusing to those who are not actively involved in the trades. In the event CLIENT has confusion regarding the language above, CARPENTER agrees to explain in full detail any aspect of the information listed above before signature in order to provide CLIENT with a clear understanding of what the project entails. However, in the event an aspect of the project does not coincide with what CLIENT had in mind for the final product, CARPENTER will not be liable for the lack of due diligence displayed by CLIENT by failing to bring such questions to attention before agreement signature.</li>
