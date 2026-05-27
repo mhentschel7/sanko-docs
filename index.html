@@ -777,9 +777,9 @@ ${estimateProjects.map((proj,i)=>{const pN=toNum(proj.total);return`<tr><td styl
     <div class="doc-field"><span class="lbl">Prepared By</span><div class="val">${h(sender)}</div></div>
   </div>
   ${pricingBox}
-  ${ePayTable}
   ${projSections}
   ${summaryTable}
+  ${ePayTable}
   ${hasContent?`<div class="doc-body" data-e="e-incl" contenteditable="true" style="font-size:8.5pt;font-style:italic;">*** All figures are inclusive of design, materials, fasteners, labor, delivery, site prep, installation, and cleanup.</div>`:""}
   <div style="font-family:Arial,sans-serif;font-size:${FONT.nsHead}pt;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;margin:18px 0 6px;border-bottom:2px solid #1a1a1a;padding-bottom:3px;" data-e="e-ns-head" contenteditable="true">Next Steps</div>
   <div class="doc-body" data-e="e-ns1" contenteditable="true" style="font-size:${FONT.nsBody}pt;">We have openings towards <strong>${h(avail)}</strong>. Our <strong>Spot Deposit Agreement</strong> secures your spot with a 25% deposit${dep25?` (~$${dep25} based on ${hasBundle?"bundled":"total"})`:""} plus a signed agreement. From there, we'll schedule a site visit to finalize the design via digital rendering (2 free revisions; additional at $95 each).</div>
