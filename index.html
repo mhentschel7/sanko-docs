@@ -205,6 +205,12 @@ li[data-e]:focus{outline:1px solid rgba(139,105,20,.5);background:rgba(247,242,2
       <input id="e-bundle" type="text" oninput="updateGrandDisplay();renderE()" placeholder="e.g. 52,000">
     </div>
     <hr class="form-divider">
+    <h2>Payment Schedule <span class="spec-hint">(leave blank to hide)</span></h2>
+    <div class="pct-row"><label>Spot Deposit</label><input type="number" id="e-pct1" min="0" max="100" step="0.1" value="25" oninput="renderE()"><span>%</span></div>
+    <div class="pct-row"><label>Deposit Invoice</label><input type="number" id="e-pct2" min="0" max="100" step="0.1" value="60" oninput="renderE()"><span>%</span></div>
+    <div class="pct-row"><label>Fabrication / Install</label><input type="number" id="e-pct3" min="0" max="100" step="0.1" value="30" oninput="renderE()"><span>%</span></div>
+    <div class="pct-row"><label>Project Completion</label><input type="number" id="e-pct4" min="0" max="100" step="0.1" value="10" oninput="renderE()"><span>%</span></div>
+    <hr class="form-divider">
     <details class="proj-specs-details" style="margin-bottom:10px;">
       <summary>⚙ Font Sizes</summary>
       <div style="padding:8px 2px 4px;">
@@ -746,6 +752,22 @@ ${estimateProjects.map((proj,i)=>{const pN=toNum(proj.total);return`<tr><td styl
   </div>`:""
 
   const hasContent=estimateProjects.some(p=>p.sow||p.int||p.ext);
+
+  // Payment schedule — only rows with a value are shown
+  const eDepBase=(!isNaN(bundleN)&&bundleN>0)?bundleN:grandN;
+  const ePayRows=[
+    {label:"Spot Deposit Invoice",         pct:parseFloat(v("e-pct1")), trigger:"Upon Spot Deposit Agreement signature"},
+    {label:"Deposit Invoice",              pct:parseFloat(v("e-pct2")), trigger:"Upon Service Agreement signature"},
+    {label:"Fabrication / Install Invoice",pct:parseFloat(v("e-pct3")), trigger:"Fabrication completion or start of install"},
+    {label:"Project Completion Invoice",   pct:parseFloat(v("e-pct4")), trigger:"Project completion"},
+  ].filter(r=>!isNaN(r.pct)&&r.pct>0);
+  const ePayTable=ePayRows.length?`
+  <div class="doc-sh" data-e="e-pay-head" contenteditable="true">Payment Schedule</div>
+  <table class="ptbl">
+    <tr><th>Invoice</th><th>Amount</th><th>Trigger</th><th>Terms</th></tr>
+    ${ePayRows.map(r=>`<tr><td><strong>${r.label}</strong><br><small style="font-size:7.5pt;">(${r.pct}% of ${hasBundle?"bundled":"est."} total)</small></td><td>${!isNaN(eDepBase)?"~$"+fmt$(eDepBase*r.pct/100):"TBD"}</td><td>${r.trigger}</td><td>Net 2</td></tr>`).join("")}
+  </table>`:"";
+
   document.getElementById(pid).innerHTML=docHdr()+`
   <div class="doc-title">Project Estimate</div><hr class="doc-rule">
   <div class="doc-field-row">
@@ -755,6 +777,7 @@ ${estimateProjects.map((proj,i)=>{const pN=toNum(proj.total);return`<tr><td styl
     <div class="doc-field"><span class="lbl">Prepared By</span><div class="val">${h(sender)}</div></div>
   </div>
   ${pricingBox}
+  ${ePayTable}
   ${projSections}
   ${summaryTable}
   ${hasContent?`<div class="doc-body" data-e="e-incl" contenteditable="true" style="font-size:8.5pt;font-style:italic;">*** All figures are inclusive of design, materials, fasteners, labor, delivery, site prep, installation, and cleanup.</div>`:""}
@@ -780,6 +803,8 @@ function carryEtoS(){
   // Carry total: use bundled if entered, otherwise a la carte grand total
   const bn=toNum(v("e-bundle"));const gn=eGrandTotal();
   set("s-total",(!isNaN(bn)&&bn>0)?fmt$(bn):isNaN(gn)?"":fmt$(gn));
+  // Carry payment percentages
+  ["pct1","pct2","pct3","pct4"].forEach(f=>set("s-"+f,v("e-"+f)));
   // Deep-copy all projects into spotProjects
   spotProjects=estimateProjects.map(p=>({...p}));
   renderSpotForms();
@@ -834,10 +859,10 @@ ${i<estimateProjects.length-1?`<hr class="doc-rule-thin" style="margin:14px 0 0;
   <div class="doc-sh" data-e="s-pay-head" contenteditable="true">Payment Schedule</div>
   <table class="ptbl">
     <tr><th>Invoice</th><th>Amount</th><th>Trigger</th><th>Terms</th></tr>
-    <tr><td><strong>Spot Deposit Invoice</strong><br><small style="font-size:7.5pt;">(${p1}% of est. total)</small></td><td>$${h(d1)}</td><td data-e="s-trig1" contenteditable="true">Upon Spot Deposit Agreement signature</td><td>Net 2</td></tr>
-    <tr><td><strong>Deposit Invoice</strong><br><small style="font-size:7.5pt;">(${p2}% of final, less Spot Deposit)</small></td><td>$${h(d2)}</td><td data-e="s-trig2" contenteditable="true">Upon Service Agreement signature</td><td>Net 2</td></tr>
-    <tr><td><strong>Fabrication / Install Invoice</strong><br><small style="font-size:7.5pt;">(${p3}% of final)</small></td><td>$${h(d3)}</td><td data-e="s-trig3" contenteditable="true">Fabrication completion or start of install</td><td>Net 2</td></tr>
-    <tr><td><strong>Project Completion Invoice</strong><br><small style="font-size:7.5pt;">(${p4}% of final)</small></td><td>$${h(d4)}</td><td data-e="s-trig4" contenteditable="true">Project completion</td><td>Net 2</td></tr>
+    ${p1>0?`<tr><td><strong>Spot Deposit Invoice</strong><br><small style="font-size:7.5pt;">(${p1}% of est. total)</small></td><td>$${h(d1)}</td><td data-e="s-trig1" contenteditable="true">Upon Spot Deposit Agreement signature</td><td>Net 2</td></tr>`:""}
+    ${p2>0?`<tr><td><strong>Deposit Invoice</strong><br><small style="font-size:7.5pt;">(${p2}% of final, less Spot Deposit)</small></td><td>$${h(d2)}</td><td data-e="s-trig2" contenteditable="true">Upon Service Agreement signature</td><td>Net 2</td></tr>`:""}
+    ${p3>0?`<tr><td><strong>Fabrication / Install Invoice</strong><br><small style="font-size:7.5pt;">(${p3}% of final)</small></td><td>$${h(d3)}</td><td data-e="s-trig3" contenteditable="true">Fabrication completion or start of install</td><td>Net 2</td></tr>`:""}
+    ${p4>0?`<tr><td><strong>Project Completion Invoice</strong><br><small style="font-size:7.5pt;">(${p4}% of final)</small></td><td>$${h(d4)}</td><td data-e="s-trig4" contenteditable="true">Project completion</td><td>Net 2</td></tr>`:""}
   </table>
   <div class="doc-cl"><div class="doc-cl-t" data-e="s-cl1t" contenteditable="true">Securing Your Project</div><p data-e="s-cl1b" contenteditable="true">In order to secure CLIENT'S project in CARPENTER'S queue, CLIENT agrees to supply CARPENTER with a deposit equaling ${p1}% of the estimated project total as of the date of this agreement. Any amendments to the general design that affect the final price along with any fluctuations of project material costs will be reflected in future invoicing.</p></div>
   <div class="doc-cl"><div class="doc-cl-t" data-e="s-cl2t" contenteditable="true">Spot Deposit Payment Terms</div><p data-e="s-cl2b" contenteditable="true">The Spot Deposit Invoice payment must be received no later than two (2) business days after both parties sign this agreement in order to hold CLIENT'S project in CARPENTER'S project queue. If the Spot Deposit Invoice payment is not received within the above stated time frame, CLIENT is at risk of forfeiting their position within CARPENTER'S project queue.</p></div>
@@ -861,6 +886,8 @@ function carryStoSA(){
   ["name","street","city","email","start","build","install"].forEach(f=>set("sa-"+f,v("s-"+f)));
   set("sa-total",v("s-total"));set("sa-spot",v("s-dep1"));
   set("sa-pct2",v("s-pct2"));set("sa-pct3",v("s-pct3"));set("sa-pct4",v("s-pct4"));
+  // Also carry the date and timeline from spot deposit
+  ["date","start","build","install"].forEach(f=>{ if(!v("sa-"+f)) set("sa-"+f,v("s-"+f)); });
   // Deep-copy all projects into saProjects
   saProjects=spotProjects.map(p=>({...p}));
   renderSAForms();
@@ -946,9 +973,9 @@ ${i<saProjects.length-1?`<hr class="doc-rule-thin" style="margin:14px 0 0;">`:""
       <p data-e="sa-pay-b" contenteditable="true">Upon completion of the project, CLIENT will pay CARPENTER a total of <strong>$${h(total)}</strong> for Carpentry Services. A Spot Deposit Invoice in the amount of <strong>$${h(spot)}</strong> was previously paid by CLIENT.</p></div>
     <table class="ptbl">
       <tr><th>Invoice</th><th>Amount</th><th>Trigger</th><th>Terms</th></tr>
-      <tr><td><strong>Deposit Invoice</strong><br><small style="font-size:7.5pt;">${p2}% of final, less Spot Deposit</small></td><td>$${h(d2)}</td><td data-e="sa-trig1" contenteditable="true">Upon Service Agreement signature</td><td>Net 2</td></tr>
-      <tr><td><strong>Fabrication / Install Invoice</strong><br><small style="font-size:7.5pt;">${p3}% of final</small></td><td>$${h(d3)}</td><td data-e="sa-trig2" contenteditable="true">Fabrication completion or start of install</td><td>Net 2</td></tr>
-      <tr><td><strong>Project Completion Invoice</strong><br><small style="font-size:7.5pt;">${p4}% of final</small></td><td>$${h(d4)}</td><td data-e="sa-trig3" contenteditable="true">Project completion</td><td>Net 2</td></tr>
+      ${p2>0?`<tr><td><strong>Deposit Invoice</strong><br><small style="font-size:7.5pt;">${p2}% of final, less Spot Deposit</small></td><td>$${h(d2)}</td><td data-e="sa-trig1" contenteditable="true">Upon Service Agreement signature</td><td>Net 2</td></tr>`:""}
+      ${p3>0?`<tr><td><strong>Fabrication / Install Invoice</strong><br><small style="font-size:7.5pt;">${p3}% of final</small></td><td>$${h(d3)}</td><td data-e="sa-trig2" contenteditable="true">Fabrication completion or start of install</td><td>Net 2</td></tr>`:""}
+      ${p4>0?`<tr><td><strong>Project Completion Invoice</strong><br><small style="font-size:7.5pt;">${p4}% of final</small></td><td>$${h(d4)}</td><td data-e="sa-trig3" contenteditable="true">Project completion</td><td>Net 2</td></tr>`:""}
       <tr><td colspan="2"><strong>TOTAL</strong></td><td colspan="2"><strong>$${h(total)}</strong></td></tr>
     </table>
     <div data-e="sa-pay-notes" contenteditable="true" style="font-size:var(--doc-body-size);margin-bottom:10px;"><ul style="margin:4px 0 4px 18px;padding:0;">
