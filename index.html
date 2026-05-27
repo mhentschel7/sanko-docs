@@ -705,7 +705,8 @@ function renderE(){
   const savings=(!isNaN(grandN)&&!isNaN(bundleN)&&bundleN<grandN)?fmt$(grandN-bundleN):"";
   // Spot deposit is always calculated from bundled total (if entered), otherwise a la carte
   const depBase=(!isNaN(bundleN)&&bundleN>0)?bundleN:grandN;
-  const dep25=!isNaN(depBase)?fmt$(depBase*.25):"";
+  const ep1=parseFloat(v("e-pct1"))||0,ep2=parseFloat(v("e-pct2"))||0,ep3=parseFloat(v("e-pct3"))||0,ep4=parseFloat(v("e-pct4"))||0;
+  const dep25=(!isNaN(depBase)&&ep1>0)?fmt$(depBase*ep1/100):"";
   const avail=(estimateProjects[0]&&estimateProjects[0].avail)||"the coming months";
 
   // Project sections
@@ -782,8 +783,8 @@ ${estimateProjects.map((proj,i)=>{const pN=toNum(proj.total);return`<tr><td styl
   ${ePayTable}
   ${hasContent?`<div class="doc-body" data-e="e-incl" contenteditable="true" style="font-size:8.5pt;font-style:italic;">*** All figures are inclusive of design, materials, fasteners, labor, delivery, site prep, installation, and cleanup.</div>`:""}
   <div style="font-family:Arial,sans-serif;font-size:${FONT.nsHead}pt;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;margin:18px 0 6px;border-bottom:2px solid #1a1a1a;padding-bottom:3px;" data-e="e-ns-head" contenteditable="true">Next Steps</div>
-  <div class="doc-body" data-e="e-ns1" contenteditable="true" style="font-size:${FONT.nsBody}pt;">We have openings towards <strong>${h(avail)}</strong>. Our <strong>Spot Deposit Agreement</strong> secures your spot with a 25% deposit${dep25?` (~$${dep25} based on ${hasBundle?"bundled":"total"})`:""} plus a signed agreement. From there, we'll schedule a site visit to finalize the design via digital rendering (2 free revisions; additional at $95 each).</div>
-  <div class="doc-body" data-e="e-ns2" contenteditable="true" style="font-size:${FONT.nsBody}pt;">Once design is approved, a <strong>Service Agreement</strong> will be issued with a deposit of 60% of the final total less the Spot Deposit. Remaining: 30% at fabrication/installation and 10% upon project completion.</div>
+  <div class="doc-body" data-e="e-ns1" contenteditable="true" style="font-size:${FONT.nsBody}pt;">We have openings towards <strong>${h(avail)}</strong>. Our <strong>Spot Deposit Agreement</strong> secures your spot${ep1>0?` with a <strong>${ep1}% deposit</strong>${dep25?` (~$${dep25} based on ${hasBundle?"bundled":"total"})`:""}`:" with a signed deposit"} plus a signed agreement. From there, we'll schedule a site visit to finalize the design via digital rendering (2 free revisions; additional at $95 each).</div>
+  <div class="doc-body" data-e="e-ns2" contenteditable="true" style="font-size:${FONT.nsBody}pt;">Once design is approved, a <strong>Service Agreement</strong> will be issued${ep2>0?` with a deposit of <strong>${ep2}%</strong> of the final total less the Spot Deposit`:""}. ${[ep3>0?`<strong>${ep3}%</strong> at fabrication/installation`:"",ep4>0?`<strong>${ep4}%</strong> upon project completion`:""].filter(Boolean).length?`Remaining: ${[ep3>0?`<strong>${ep3}%</strong> at fabrication/installation`:"",ep4>0?`<strong>${ep4}%</strong> upon project completion`:""].filter(Boolean).join(" and ")}.`:""}</div>
   ${finBox()}
   <div class="doc-disc">
     <div class="dh" data-e="e-d1h" contenteditable="true">Estimates vs. Final Pricing</div>
